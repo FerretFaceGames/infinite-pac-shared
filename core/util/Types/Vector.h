@@ -6,7 +6,7 @@ namespace ff
 	class Vector : private Allocator
 	{
 		typedef Vector<T, StackSize, Allocator> MyType;
-		static const bool IS_POD = ff::IsPlainOldData<T>::value;
+		static const bool IS_POD = std::is_pod<T>::value;
 
 	public:
 		Vector();

@@ -85,6 +85,6 @@ FARPROC WINAPI DelayLoadHook(unsigned int notify, PDelayLoadInfo loadInfo)
 	return nullptr;
 }
 
-PfnDliHook __pfnDliNotifyHook2 = DelayLoadHook;
+const PfnDliHook __pfnDliNotifyHook2 = DelayLoadHook;
 
 #endif // !METRO_APP

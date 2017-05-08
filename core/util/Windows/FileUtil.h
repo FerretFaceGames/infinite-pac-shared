@@ -98,7 +98,7 @@ namespace ff
 	UTIL_API bool WriteUnicodeBOMToFile(HANDLE hFile);
 	UTIL_API bool WriteUnicodeBOM(IDataWriter *pWriter);
 	UTIL_API bool ReadWholeFile(StringRef path, IData **ppData);
-	UTIL_API bool ReadWholeFile(StringRef path, String &szOut);
+	UTIL_API bool ReadWholeFile(StringRef path, StringOut szOut);
 	UTIL_API String CleanFileName(StringRef name);
 	UTIL_API int CompareFileTime(const FILETIME &lhs, const FILETIME &rhs);
 	UTIL_API HANDLE FindFirstChangeNotification(StringRef path, BOOL subDirs, DWORD filter);

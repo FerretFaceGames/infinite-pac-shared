@@ -141,7 +141,7 @@ HRESULT ff::Default2dEffect::_Construct(IUnknown *unkOuter)
 
 bool ff::Default2dEffect::Init()
 {
-	assertRetVal(_device && _device->GetDX() && _device->GetContext(), false);
+	assertRetVal(_device && _device->Get3d() && _device->GetContext(), false);
 
 	std::array<String, 7> resNames =
 	{
@@ -165,7 +165,7 @@ bool ff::Default2dEffect::Init()
 	frameConstantsData.SysMemSlicePitch = 0;
 
 	CD3D11_BUFFER_DESC frameConstantsDesc(sizeof(FrameConstantsCore), D3D11_BIND_CONSTANT_BUFFER);
-	assertHrRetVal(_device->GetDX()->CreateBuffer(&frameConstantsDesc, &frameConstantsData, &_frameConstantsBuffer), false);
+	assertHrRetVal(_device->Get3d()->CreateBuffer(&frameConstantsDesc, &frameConstantsData, &_frameConstantsBuffer), false);
 
 	return true;
 }
@@ -204,7 +204,7 @@ static bool LoadGraphShaders(
 	if (vertexShaderData && vertexShader)
 	{
 		assertRetVal(vertexShaderData->GetData(), false);
-		assertHrRetVal(device->GetDX()->CreateVertexShader(
+		assertHrRetVal(device->Get3d()->CreateVertexShader(
 			vertexShaderData->GetData()->GetMem(),
 			vertexShaderData->GetData()->GetSize(),
 			nullptr,
@@ -223,7 +223,7 @@ static bool LoadGraphShaders(
 	if (pixelShaderData && pixelShader)
 	{
 		assertRetVal(pixelShaderData->GetData(), false);
-		assertHrRetVal(device->GetDX()->CreatePixelShader(
+		assertHrRetVal(device->Get3d()->CreatePixelShader(
 			pixelShaderData->GetData()->GetMem(),
 			pixelShaderData->GetData()->GetSize(),
 			nullptr,

@@ -21,7 +21,7 @@ bool ff::RegGetValue(HKEY key, StringRef name, DWORD &value, DWORD dwDefault)
 	return true;
 }
 
-bool ff::RegGetValue(HKEY key, StringRef name, String &value, StringRef defaultValue)
+bool ff::RegGetValue(HKEY key, StringRef name, StringOut value, StringRef defaultValue)
 {
 	DWORD type = 0;
 	DWORD size = 0;
@@ -123,7 +123,7 @@ bool ff::RegDeleteKey(HKEY parentKey, StringRef keyName)
 	return InternalRegDeleteKey(parentKey, keyName, 0);
 }
 
-bool ff::RegEnumKey(HKEY key, DWORD nIndex, String &outName)
+bool ff::RegEnumKey(HKEY key, DWORD nIndex, StringOut outName)
 {
 	DWORD nSubKeys          = 0;
 	DWORD nMaxSubKeyNameLen = 0;
@@ -165,7 +165,7 @@ bool ff::RegEnumKey(HKEY key, DWORD nIndex, String &outName)
 	return false;
 }
 
-bool ff::RegEnumValue(HKEY key, DWORD nIndex, String &outName, LPDWORD pType)
+bool ff::RegEnumValue(HKEY key, DWORD nIndex, StringOut outName, LPDWORD pType)
 {
 	DWORD nValues          = 0;
 	DWORD nMaxValueNameLen = 0;

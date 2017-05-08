@@ -106,27 +106,15 @@ IXAudio2 *ff::AudioFactory::GetAudio()
 
 		if (!_audio)
 		{
-#if !METRO_APP
-			// Force SetupAPI.dll to be loaded before the XAudio DLL.
-			// Otherwise, on shutdown, SetupAPI can be unloaded early, causing a failure
-			// while MMDevAPI.dll is in DllMain, and no other DLLs get DllMain called.
-			// http://social.msdn.microsoft.com/Forums/en-US/vcgeneral/thread/d15e5b4a-b7cd-42d4-905a-f8ed501d857d
-			SetupGetNonInteractiveMode();
-#endif
+			assertHrRetVal(XAudio2Create(&_audio), nullptr);
+
 			if (GetThisModule().IsDebugBuild())
 			{
-				XAudio2Create(&_audio);
-
 				XAUDIO2_DEBUG_CONFIGURATION dc;
 				ZeroObject(dc);
 				dc.TraceMask = XAUDIO2_LOG_ERRORS;
 				dc.BreakMask = XAUDIO2_LOG_ERRORS;
 				_audio->SetDebugConfiguration(&dc);
-			}
-
-			if (!_audio)
-			{
-				assertHrRetVal(XAudio2Create(&_audio), nullptr);
 			}
 		}
 	}

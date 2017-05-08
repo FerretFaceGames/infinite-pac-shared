@@ -70,7 +70,7 @@ const BYTE *ff::LoadBytes(IDataReader *pReader, size_t nBytes)
 }
 
 template<>
-bool ff::SaveData<ff::String>(ff::IDataWriter *pWriter, const ff::String &data)
+bool ff::SaveData<ff::String>(ff::IDataWriter *pWriter, ff::StringRef data)
 {
 	DWORD nBytes = (DWORD)((data.length() + 1) * sizeof(wchar_t));
 
@@ -80,7 +80,7 @@ bool ff::SaveData<ff::String>(ff::IDataWriter *pWriter, const ff::String &data)
 }
 
 template<>
-bool ff::LoadData<ff::String>(IDataReader *pReader, String &data)
+bool ff::LoadData<ff::String>(IDataReader *pReader, StringOut data)
 {
 	DWORD nBytes = 0;
 	assertRetVal(LoadData(pReader, nBytes), false);

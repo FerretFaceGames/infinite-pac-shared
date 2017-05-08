@@ -18,7 +18,7 @@
     <DefaultLanguage Condition=" '$(DefaultLanguage)' == '' ">en-US</DefaultLanguage>
     <Keyword Condition=" '$(Keyword)' == '' ">Win32Proj</Keyword>
     <MinimumVisualStudioVersion Condition=" '$(MinimumVisualStudioVersion)' == '' ">$(VsRelease).0</MinimumVisualStudioVersion>
-    <PlatformToolset Condition=" '$(PlatformToolset)' == '' ">v$(VsRelease)0</PlatformToolset>
+    <PlatformToolset Condition=" '$(PlatformToolset)' == '' ">v141</PlatformToolset>
     <ProjectName Condition=" '$(ProjectName)' == '' ">$(MSBuildProjectName)</ProjectName>
     <RootNamespace Condition=" '$(RootNamespace)' == '' ">$(RootNamespace)</RootNamespace>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
@@ -43,13 +43,14 @@
         <GenerateManifest Condition=" '$(GenerateManifest)' == '' And '$(ConfigurationType)' != 'Application' ">false</GenerateManifest>
         <GenerateWindowsMetadata Condition=" '$(GenerateWindowsMetadata)' == '' And '$(ConfigurationType)' == 'Application' ">true</GenerateWindowsMetadata>
         <GenerateWindowsMetadata Condition=" '$(GenerateWindowsMetadata)' == '' ">false</GenerateWindowsMetadata>
-        <WindowsTargetPlatformMinVersion Condition=" '$(WindowsTargetPlatformMinVersion)' == '' ">10.0.10240.0</WindowsTargetPlatformMinVersion>
-        <WindowsTargetPlatformVersion Condition=" '$(WindowsTargetPlatformVersion)' == '' ">10.0.10240.0</WindowsTargetPlatformVersion>
+        <WindowsTargetPlatformMinVersion Condition=" '$(WindowsTargetPlatformMinVersion)' == '' ">10.0.14393.0</WindowsTargetPlatformMinVersion>
+        <WindowsTargetPlatformVersion Condition=" '$(WindowsTargetPlatformVersion)' == '' ">10.0.14393.0</WindowsTargetPlatformVersion>
       </PropertyGroup>
     </When>
     <Otherwise>
       <PropertyGroup>
         <AppContainerApplication Condition=" '$(AppContainerApplication)' == '' ">false</AppContainerApplication>
+        <WindowsTargetPlatformVersion Condition=" '$(WindowsTargetPlatformVersion)' == '' ">10.0.14393.0</WindowsTargetPlatformVersion>
       </PropertyGroup>
     </Otherwise>
   </Choose>
@@ -117,14 +118,13 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <PreprocessorDefinitions Condition=" '$(AppType)' == 'Metro' ">WINVER=0x0A00;_WIN32_WINNT=0x0A00;_METRO_APP;METRO_APP=1;DISABLE_XAML_GENERATED_MAIN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition=" '$(AppType)' == 'Desktop' ">WINVER=0x0601;_WIN32_WINNT=0x0601;WIN32;METRO_APP=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition=" '$(AppType)' == 'Desktop' ">WINVER=0x0602;_WIN32_WINNT=0x0602;WIN32;METRO_APP=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition=" '$(ConfigurationType)' == 'DynamicLibrary' And '$(AppType)' == 'Metro' ">_WINRT_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition=" '$(ConfigurationType)' == 'DynamicLibrary' ">_WINDOWS;_WINDLL;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition=" '$(ConfigurationType)' == 'StaticLibrary' ">_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition=" '$(ConfigurationType)' == 'Application' ">_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition=" '$(ConfigurationType)' == 'Application' ">_WINDOWS;_WINEXE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition=" '$(Configuration)' == 'Debug' ">DEBUG=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition=" '$(Configuration)' != 'Debug' ">NDEBUG;DEBUG=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ProgramDataBaseFileName>$(IntDir)$(ProjectName).pdb</ProgramDataBaseFileName>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <BasicRuntimeChecks Condition=" '$(Configuration)' == 'Debug' ">EnableFastChecks</BasicRuntimeChecks>
       <TreatWarningAsError>true</TreatWarningAsError>
@@ -168,12 +168,11 @@
     <Link>
       <DataExecutionPrevention>true</DataExecutionPrevention>
       <EnableCOMDATFolding Condition=" '$(Configuration)' != 'Debug' ">true</EnableCOMDATFolding>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateDebugInformation Condition=" '$(Configuration)' != 'Debug' ">true</GenerateDebugInformation>
       <GenerateWindowsMetadata>$(GenerateWindowsMetadata)</GenerateWindowsMetadata>
       <LargeAddressAware>true</LargeAddressAware>
       <LinkTimeCodeGeneration Condition=" '$(Configuration)' != 'Debug' ">UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
       <OptimizeReferences Condition=" '$(Configuration)' != 'Debug' ">true</OptimizeReferences>
-      <ProgramDatabaseFile>$(IntDir)$(ProjectName).pdb</ProgramDatabaseFile>
       <RandomizedBaseAddress>true</RandomizedBaseAddress>
       <SubSystem>Windows</SubSystem>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>

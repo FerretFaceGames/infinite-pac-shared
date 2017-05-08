@@ -43,7 +43,7 @@ private:
 	static unsigned int WINAPI WorkerThread(void *context);
 	void WorkerThread();
 
-	ff::List<WorkEntry *> _workQueue;
+	std::queue<WorkEntry *> _workQueue;
 #endif
 };
 
@@ -107,7 +107,7 @@ bool ThreadPool::Init()
 
 void ThreadPool::Add(std::function<void()> runFunc, std::function<void()> completeFunc)
 {
-	static std::function<void()> s_emptyFunc = []() {};
+	static std::function<void()> s_emptyFunc = []{};
 	std::function<void()> &realRunFunc = runFunc ? runFunc : s_emptyFunc;
 	std::function<void()> &realCompleteFunc = completeFunc ? completeFunc : s_emptyFunc;
 	WorkEntry *work = nullptr;
@@ -127,7 +127,7 @@ void ThreadPool::Add(std::function<void()> runFunc, std::function<void()> comple
 				keepAlive->RunWork(work);
 			}));
 #else
-			_workQueue.Insert(work);
+			_workQueue.push(work);
 #endif
 			::ResetEvent(_eventNoWork);
 		}
@@ -203,17 +203,25 @@ void ThreadPool::WorkerThread()
 		WorkEntry *work = nullptr;
 		{
 			ff::LockMutex crit(_cs);
-			while (!_destroyed && _workQueue.IsEmpty())
+			while (!_destroyed && _workQueue.empty())
 			{
 				_cs.WaitForCondition(_workCondition);
 			}
 
-			if (_destroyed && _workQueue.IsEmpty())
+			if (_destroyed && _workQueue.empty())
 			{
 				break;
 			}
 
-			work = _workQueue.Size() ? _workQueue.PopFirst() : nullptr;
+			if (!_workQueue.empty())
+			{
+				work = _workQueue.front();
+				_workQueue.pop();
+			}
+			else
+			{
+				work = nullptr;
+			}
 		}
 
 		RunWork(work);

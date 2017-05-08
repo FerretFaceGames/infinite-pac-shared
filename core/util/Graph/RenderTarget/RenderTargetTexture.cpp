@@ -32,6 +32,7 @@ namespace ff
 		virtual PointInt GetBufferSize() const override;
 		virtual PointInt GetRotatedSize() const override;
 		virtual int GetRotatedDegrees() const override;
+		virtual double GetDpiScale() const override;
 		virtual void Clear(const DirectX::XMFLOAT4 *pColor = nullptr) override;
 
 		virtual ID3D11Texture2D *GetTexture() override;
@@ -149,7 +150,7 @@ bool CreateRenderTarget(
 		break;
 	}
 
-	assertHrRetVal(pDevice->GetDX()->CreateRenderTargetView(pTexture, &desc, ppView), false);
+	assertHrRetVal(pDevice->Get3d()->CreateRenderTargetView(pTexture, &desc, ppView), false);
 
 	return true;
 }
@@ -233,4 +234,9 @@ ID3D11RenderTargetView *ff::RenderTargetTexture::GetTarget()
 int ff::RenderTargetTexture::GetRotatedDegrees() const
 {
 	return 0;
+}
+
+double ff::RenderTargetTexture::GetDpiScale() const
+{
+	return 1.0;
 }

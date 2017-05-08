@@ -154,7 +154,7 @@ static HRESULT _ComputeMSE( _In_ const Image& image1, _In_ const Image& image2,
     }
     else
     {
-        DirectX::XMFLOAT4 _mseV;
+        XMFLOAT4 _mseV;
         XMStoreFloat4( &_mseV, v );
         mse = _mseV.x + _mseV.y + _mseV.z + _mseV.w;
     }

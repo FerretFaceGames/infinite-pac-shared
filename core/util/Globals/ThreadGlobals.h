@@ -39,7 +39,7 @@ namespace ff
 		unsigned int _id;
 		bool _allowDispatch;
 		ComPtr<IThreadDispatch> _dispatch;
-		List<std::function<void()>> _shutdownFunctions;
+		std::list<std::function<void()>> _shutdownFunctions;
 	};
 
 	UTIL_API void AtThreadShutdown(std::function<void()> func);

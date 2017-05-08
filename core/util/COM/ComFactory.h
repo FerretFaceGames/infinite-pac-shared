@@ -17,13 +17,13 @@ namespace ff
 		IClassFactory **factory);
 
 	template<typename T>
-	bool CreateClassFactory(REFGUID clsid, Module *module, IClassFactory **factory)
+	bool CreateClassFactory(REFGUID clsid, const Module *module, IClassFactory **factory)
 	{
 		return CreateClassFactory(clsid, module, ComAllocator<T>::ComClassFactory, factory);
 	}
 
 	template<typename T>
-	bool CreateSingletonClassFactory(REFGUID clsid, Module *module, IClassFactory **factory)
+	bool CreateSingletonClassFactory(REFGUID clsid, const Module *module, IClassFactory **factory)
 	{
 		return CreateSingletonClassFactory(clsid, module, ComAllocator<T>::ComClassFactory, factory);
 	}

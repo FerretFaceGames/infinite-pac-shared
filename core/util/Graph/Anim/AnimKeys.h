@@ -73,14 +73,14 @@ namespace ff
 			return _frame < rhs._frame;
 		}
 
-		static const VectorKey &Identity();
-		static const VectorKey &IdentityScale();
-		static const VectorKey &IdentityTranslate();
-		static const VectorKey &IdentityWhite();
-		static const VectorKey &IdentityClear();
+		UTIL_API static const VectorKey &Identity();
+		UTIL_API static const VectorKey &IdentityScale();
+		UTIL_API static const VectorKey &IdentityTranslate();
+		UTIL_API static const VectorKey &IdentityWhite();
+		UTIL_API static const VectorKey &IdentityClear();
 
-		static void InitTangents(VectorKey *pKeys, size_t nKeys, float tension);
-		static void Interpolate(const VectorKey &lhs, const VectorKey &rhs, float time, bool bSpline, DirectX::XMFLOAT4 &output);
+		UTIL_API static void InitTangents(VectorKey *pKeys, size_t nKeys, float tension);
+		UTIL_API static void Interpolate(const VectorKey &lhs, const VectorKey &rhs, float time, bool bSpline, DirectX::XMFLOAT4 &output);
 	};
 
 	struct QuaternionKey

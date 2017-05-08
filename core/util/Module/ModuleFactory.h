@@ -30,7 +30,7 @@ namespace ff
 			REFGUID id,
 			GetInstanceFuncType instance,
 			StartupFuncType startup,
-			FactoryFuncType func);
+			FactoryFuncType func = nullptr);
 
 		UTIL_API ~ModuleFactory();
 

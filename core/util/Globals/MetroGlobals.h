@@ -67,6 +67,7 @@ namespace ff
 		UTIL_API virtual IJoystickInput *GetJoysticks() const override;
 		UTIL_API virtual I2dRenderer *Get2dRender() const override;
 		UTIL_API virtual I2dEffect *Get2dEffect() const override;
+		UTIL_API virtual IThreadDispatch *GetGameDispatch() const override;
 		UTIL_API virtual const GlobalTime &GetGlobalTime() const override;
 		UTIL_API virtual const FrameTime &GetFrameTime() const override;
 
@@ -106,7 +107,6 @@ namespace ff
 		void OnSwapChainSizeChanged(Platform::Object ^sender, Windows::UI::Xaml::SizeChangedEventArgs ^args);
 
 		// Update/render loop
-		std::shared_ptr<State> SetRenderLoopState(const std::shared_ptr<State> &state);
 		void StartRenderLoop();
 		void StopRenderLoop();
 		void RunRenderLoop(bool run);
@@ -115,7 +115,6 @@ namespace ff
 		void UpdateDpiScale();
 		void UpdateResourceThread();
 		void ValidateGraphDevice();
-		IThreadDispatch *GetGameDispatch() const;
 
 		// Update during game loop
 		bool FrameAdvanceAndRender();

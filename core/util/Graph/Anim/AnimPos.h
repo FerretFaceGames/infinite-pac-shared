@@ -12,6 +12,7 @@ namespace ff
 	UTIL_API const DirectX::XMFLOAT4 &GetColorBlack();
 	UTIL_API const DirectX::XMFLOAT4 &GetColorNone();
 	UTIL_API const DirectX::XMFLOAT4X4 &GetIdentityMatrix();
+	UTIL_API const DirectX::XMFLOAT3X3 &GetIdentityMatrix3x3();
 
 	// Makes all the weights add up to one (ignoring negative weights)
 	void NormalizeWeights(float *pWeights, size_t nCount);

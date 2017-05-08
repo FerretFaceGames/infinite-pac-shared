@@ -7,3 +7,17 @@
 #include "Core/DelayLoadInclude.h"
 #include "COM/ComInclude.h"
 #include "Module/ModuleInclude.h"
+
+#ifdef _WINEXE
+
+EXTERN_C IMAGE_DOS_HEADER __ImageBase;
+
+namespace ff
+{
+	static HINSTANCE GetMainInstance()
+	{
+		return (HINSTANCE)&__ImageBase;
+	}
+}
+
+#endif

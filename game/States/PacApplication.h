@@ -1,10 +1,10 @@
 #pragma once
 
-#include "App/State.h"
 #include "Core/PlayingGame.h"
 #include "Dict/Dict.h"
 #include "Input/PointerDevice.h"
 #include "Resource/ResourceValue.h"
+#include "State\State.h"
 
 namespace ff
 {
@@ -81,7 +81,6 @@ private:
 	void RenderPacPressing(ff::AppGlobals *context, ff::I2dRenderer *render);
 	void RenderDebugGrid(ff::AppGlobals *context, ff::I2dRenderer *render, ff::PointInt tiles);
 	void SetState(EAppState state);
-	void ReportStartingGame();
 	IPlayingActor *GetCurrentPac() const;
 
 	EAppState _state;

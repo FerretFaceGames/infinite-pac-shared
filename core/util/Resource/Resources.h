@@ -14,6 +14,7 @@ namespace ff
 		virtual void SetResources(const Dict &dict) = 0;
 		virtual Dict GetResources() const = 0;
 		virtual void Clear() = 0;
+		virtual bool IsLoading() const = 0;
 
 		virtual SharedResourceValue GetResource(StringRef name) = 0;
 		virtual SharedResourceValue FlushResource(SharedResourceValue value) = 0;

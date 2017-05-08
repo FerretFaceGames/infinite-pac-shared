@@ -33,13 +33,13 @@ ff::String::String()
 {
 }
 
-ff::String::String(const String &rhs)
+ff::String::String(StringRef rhs)
 	: _str(rhs._str)
 {
 	_str->AddRef();
 }
 
-ff::String::String(const String &rhs, size_t pos, size_t count)
+ff::String::String(StringRef rhs, size_t pos, size_t count)
 	: _str(&s_empty)
 {
 	assign(rhs, pos, count);
@@ -74,27 +74,27 @@ ff::String::~String()
 	_str->Release();
 }
 
-ff::String &ff::String::operator=(const String &rhs)
+ff::StringOut ff::String::operator=(StringRef rhs)
 {
 	return assign(rhs);
 }
 
-ff::String &ff::String::operator=(String &&rhs)
+ff::StringOut ff::String::operator=(String &&rhs)
 {
 	return assign(std::move(rhs));
 }
 
-ff::String &ff::String::operator=(const wchar_t *rhs)
+ff::StringOut ff::String::operator=(const wchar_t *rhs)
 {
 	return assign(rhs);
 }
 
-ff::String &ff::String::operator=(wchar_t ch)
+ff::StringOut ff::String::operator=(wchar_t ch)
 {
 	return assign(1, ch);
 }
 
-ff::String ff::String::operator+(const String &rhs) const
+ff::String ff::String::operator+(StringRef rhs) const
 {
 	String ret = *this;
 	ret.append(rhs);
@@ -122,27 +122,27 @@ ff::String ff::String::operator+(wchar_t ch) const
 	return ret;
 }
 
-ff::String &ff::String::operator+=(const String &rhs)
+ff::StringOut ff::String::operator+=(StringRef rhs)
 {
 	return append(rhs);
 }
 
-ff::String &ff::String::operator+=(String &&rhs)
+ff::StringOut ff::String::operator+=(String &&rhs)
 {
 	return append(std::move(rhs));
 }
 
-ff::String &ff::String::operator+=(const wchar_t *rhs)
+ff::StringOut ff::String::operator+=(const wchar_t *rhs)
 {
 	return append(rhs);
 }
 
-ff::String &ff::String::operator+=(wchar_t ch)
+ff::StringOut ff::String::operator+=(wchar_t ch)
 {
 	return append(1, ch);
 }
 
-bool ff::String::operator==(const String &rhs) const
+bool ff::String::operator==(StringRef rhs) const
 {
 	return compare(rhs) == 0;
 }
@@ -157,7 +157,7 @@ bool ff::String::operator==(wchar_t ch) const
 	return compare(&ch, 1) == 0;
 }
 
-bool ff::String::operator!=(const String &rhs) const
+bool ff::String::operator!=(StringRef rhs) const
 {
 	return compare(rhs) != 0;
 }
@@ -172,7 +172,7 @@ bool ff::String::operator!=(wchar_t ch) const
 	return compare(&ch, 1) != 0;
 }
 
-bool ff::String::operator<(const String &rhs) const
+bool ff::String::operator<(StringRef rhs) const
 {
 	return compare(rhs) < 0;
 }
@@ -187,7 +187,7 @@ bool ff::String::operator<(wchar_t ch) const
 	return compare(&ch, 1) < 0;
 }
 
-bool ff::String::operator<=(const String &rhs) const
+bool ff::String::operator<=(StringRef rhs) const
 {
 	return compare(rhs) <= 0;
 }
@@ -202,7 +202,7 @@ bool ff::String::operator<=(wchar_t ch) const
 	return compare(&ch, 1) <= 0;
 }
 
-bool ff::String::operator>(const String &rhs) const
+bool ff::String::operator>(StringRef rhs) const
 {
 	return compare(rhs) > 0;
 }
@@ -217,7 +217,7 @@ bool ff::String::operator>(wchar_t ch) const
 	return compare(&ch, 1) > 0;
 }
 
-bool ff::String::operator>=(const String &rhs) const
+bool ff::String::operator>=(StringRef rhs) const
 {
 	return compare(rhs) >= 0;
 }
@@ -232,64 +232,64 @@ bool ff::String::operator>=(wchar_t ch) const
 	return compare(&ch, 1) >= 0;
 }
 
-ff::String &ff::String::assign(const String &rhs, size_t pos, size_t count)
+ff::StringOut ff::String::assign(StringRef rhs, size_t pos, size_t count)
 {
 	return replace((size_t)0, size(), rhs, pos, count);
 }
 
-ff::String &ff::String::assign(String &&rhs)
+ff::StringOut ff::String::assign(String &&rhs)
 {
 	std::swap(_str, rhs._str);
 	rhs.clear();
 	return *this;
 }
 
-ff::String &ff::String::assign(const wchar_t *rhs, size_t count)
+ff::StringOut ff::String::assign(const wchar_t *rhs, size_t count)
 {
 	return replace((size_t)0, size(), rhs, count);
 }
 
-ff::String &ff::String::assign(size_t count, wchar_t ch)
+ff::StringOut ff::String::assign(size_t count, wchar_t ch)
 {
 	return replace((size_t)0, size(), count, ch);
 }
 
-ff::String &ff::String::assign(const wchar_t *start, const wchar_t *end)
+ff::StringOut ff::String::assign(const wchar_t *start, const wchar_t *end)
 {
 	return replace((size_t)0, size(), start, end - start);
 }
 
-ff::String &ff::String::append(const String &rhs, size_t pos, size_t count)
+ff::StringOut ff::String::append(StringRef rhs, size_t pos, size_t count)
 {
 	return replace(size(), (size_t)0, rhs, pos, count);
 }
 
-ff::String &ff::String::append(const wchar_t *rhs, size_t count)
+ff::StringOut ff::String::append(const wchar_t *rhs, size_t count)
 {
 	return replace(size(), (size_t)0, rhs, count);
 }
 
-ff::String &ff::String::append(size_t count, wchar_t ch)
+ff::StringOut ff::String::append(size_t count, wchar_t ch)
 {
 	return replace(size(), (size_t)0, count, ch);
 }
 
-ff::String &ff::String::append(const wchar_t *start, const wchar_t *end)
+ff::StringOut ff::String::append(const wchar_t *start, const wchar_t *end)
 {
 	return replace(size(), (size_t)0, start, end - start);
 }
 
-ff::String &ff::String::insert(size_t pos, const String &rhs, size_t rhs_pos, size_t count)
+ff::StringOut ff::String::insert(size_t pos, StringRef rhs, size_t rhs_pos, size_t count)
 {
 	return replace(pos, (size_t)0, rhs, rhs_pos, count);
 }
 
-ff::String &ff::String::insert(size_t pos, const wchar_t *rhs, size_t count)
+ff::StringOut ff::String::insert(size_t pos, const wchar_t *rhs, size_t count)
 {
 	return replace(pos, (size_t)0, rhs, count);
 }
 
-ff::String &ff::String::insert(size_t pos, size_t count, wchar_t ch)
+ff::StringOut ff::String::insert(size_t pos, size_t count, wchar_t ch)
 {
 	return replace(pos, (size_t)0, count, ch);
 }
@@ -335,12 +335,12 @@ const wchar_t *ff::String::erase(const wchar_t *pos)
 	return replace(i, 1, (size_t)0, '\0').c_str() + i;
 }
 
-ff::String &ff::String::erase(size_t pos, size_t count)
+ff::StringOut ff::String::erase(size_t pos, size_t count)
 {
 	return replace(pos, count, (size_t)0, '\0');
 }
 
-ff::String &ff::String::replace(size_t pos, size_t count, const wchar_t *rhs, size_t rhs_count)
+ff::StringOut ff::String::replace(size_t pos, size_t count, const wchar_t *rhs, size_t rhs_count)
 {
 	if (rhs == nullptr)
 	{
@@ -370,26 +370,24 @@ ff::String &ff::String::replace(size_t pos, size_t count, const wchar_t *rhs, si
 		count = 0;
 	}
 
-	make_editable();
-
 	if (rhs_count > count)
 	{
-		_str->InsertDefault(pos, rhs_count - count);
+		Str().InsertDefault(pos, rhs_count - count);
 	}
 	else if (count > rhs_count)
 	{
-		_str->Delete(pos, count - rhs_count);
+		Str().Delete(pos, count - rhs_count);
 	}
 
 	if (rhs_count > 0)
 	{
-		memcpy(_str->Data(pos), rhs, rhs_count * sizeof(wchar_t));
+		memcpy(Str().Data(pos), rhs, rhs_count * sizeof(wchar_t));
 	}
 
 	return *this;
 }
 
-ff::String &ff::String::replace(size_t pos, size_t count, const String &rhs, size_t rhs_pos, size_t rhs_count)
+ff::StringOut ff::String::replace(size_t pos, size_t count, StringRef rhs, size_t rhs_pos, size_t rhs_count)
 {
 	if (rhs_count == INVALID_SIZE || rhs_pos + rhs_count > rhs.size())
 	{
@@ -416,7 +414,7 @@ ff::String &ff::String::replace(size_t pos, size_t count, const String &rhs, siz
 	return replace(pos, count, rhs.c_str() + rhs_pos, rhs_count);
 }
 
-ff::String &ff::String::replace(size_t pos, size_t count, size_t ch_count, wchar_t ch)
+ff::StringOut ff::String::replace(size_t pos, size_t count, size_t ch_count, wchar_t ch)
 {
 	if (count == INVALID_SIZE || pos + count > size())
 	{
@@ -425,177 +423,167 @@ ff::String &ff::String::replace(size_t pos, size_t count, size_t ch_count, wchar
 
 	if (count > 0 || ch_count > 0)
 	{
-		make_editable();
-
 		if (ch_count > count)
 		{
-			_str->InsertDefault(pos, ch_count - count);
+			Str().InsertDefault(pos, ch_count - count);
 		}
 		else if (count > ch_count)
 		{
-			_str->Delete(pos, count - ch_count);
+			Str().Delete(pos, count - ch_count);
 		}
 
 		for (size_t i = 0; i < ch_count; i++)
 		{
-			_str->SetAt(pos + i, ch);
+			Str().SetAt(pos + i, ch);
 		}
 	}
 
 	return *this;
 }
 
-ff::String &ff::String::replace(const wchar_t *start, const wchar_t *end, const wchar_t *rhs, size_t rhs_count)
+ff::StringOut ff::String::replace(const wchar_t *start, const wchar_t *end, const wchar_t *rhs, size_t rhs_count)
 {
 	return replace(start - c_str(), end - start, rhs, rhs_count);
 }
 
-ff::String &ff::String::replace(const wchar_t *start, const wchar_t *end, const String &rhs)
+ff::StringOut ff::String::replace(const wchar_t *start, const wchar_t *end, StringRef rhs)
 {
 	return replace(start - c_str(), end - start, rhs, (size_t)0, rhs.size());
 }
 
-ff::String &ff::String::replace(const wchar_t *start, const wchar_t *end, size_t ch_count, wchar_t ch)
+ff::StringOut ff::String::replace(const wchar_t *start, const wchar_t *end, size_t ch_count, wchar_t ch)
 {
 	return replace(start - c_str(), end - start, ch_count, ch);
 }
 
-ff::String &ff::String::replace(const wchar_t *start, const wchar_t *end, const wchar_t *start2, const wchar_t *end2)
+ff::StringOut ff::String::replace(const wchar_t *start, const wchar_t *end, const wchar_t *start2, const wchar_t *end2)
 {
 	return replace(start - c_str(), end - start, start2, end2 - start2);
 }
 
 ff::String::iterator ff::String::begin()
 {
-	make_editable();
-	return _str->begin();
+	return Str().begin();
 }
 
 ff::String::const_iterator ff::String::begin() const
 {
-	return _str->cbegin();
+	return StrConst().cbegin();
 }
 
 ff::String::const_iterator ff::String::cbegin() const
 {
-	return _str->cbegin();
+	return StrConst().cbegin();
 }
 
 ff::String::iterator ff::String::end()
 {
-	make_editable();
-	return _str->end();
+	return Str().end();
 }
 
 ff::String::const_iterator ff::String::end() const
 {
-	return _str->cend();
+	return StrConst().cend();
 }
 
 ff::String::const_iterator ff::String::cend() const
 {
-	return _str->cend();
+	return StrConst().cend();
 }
 
 ff::String::reverse_iterator ff::String::rbegin()
 {
-	make_editable();
-	return _str->rbegin();
+	return Str().rbegin();
 }
 
 ff::String::const_reverse_iterator ff::String::rbegin() const
 {
-	return _str->crbegin();
+	return StrConst().crbegin();
 }
 
 ff::String::const_reverse_iterator ff::String::crbegin() const
 {
-	return _str->crbegin();
+	return StrConst().crbegin();
 }
 
 ff::String::reverse_iterator ff::String::rend()
 {
-	make_editable();
-	return _str->rend();
+	return Str().rend();
 }
 
 ff::String::const_reverse_iterator ff::String::rend() const
 {
-	return _str->crend();
+	return StrConst().crend();
 }
 
 ff::String::const_reverse_iterator ff::String::crend() const
 {
-	return _str->crend();
+	return StrConst().crend();
 }
 
 wchar_t &ff::String::front()
 {
-	make_editable();
-	return _str->GetAt(0);
+	return Str().GetAt(0);
 }
 
 const wchar_t &ff::String::front() const
 {
-	return _str->GetAt(0);
+	return StrConst().GetAt(0);
 }
 
 wchar_t &ff::String::back()
 {
-	make_editable();
-	return _str->GetAt(size() - 1);
+	return Str().GetAt(size() - 1);
 }
 
 const wchar_t &ff::String::back() const
 {
-	return _str->GetAt(size() - 1);
+	return StrConst().GetAt(size() - 1);
 }
 
 wchar_t &ff::String::at(size_t pos)
 {
-	make_editable();
-	return _str->GetAt(pos);
+	return Str().GetAt(pos);
 }
 
 const wchar_t &ff::String::at(size_t pos) const
 {
-	return _str->GetAt(pos);
+	return StrConst().GetAt(pos);
 }
 
 wchar_t &ff::String::operator[](size_t pos)
 {
-	make_editable();
-	return _str->GetAt(pos);
+	return Str().GetAt(pos);
 }
 
 const wchar_t &ff::String::operator[](size_t pos) const
 {
-	return _str->GetAt(pos);
+	return StrConst().GetAt(pos);
 }
 
 const wchar_t *ff::String::c_str() const
 {
-	return _str->ConstData();
+	return StrConst().ConstData();
 }
 
 const wchar_t *ff::String::data() const
 {
-	return _str->ConstData();
+	return StrConst().ConstData();
 }
 
 size_t ff::String::length() const
 {
-	return _str->Size() - 1; // don't include null char
+	return StrConst().Size() - 1; // don't include null char
 }
 
 size_t ff::String::size() const
 {
-	return _str->Size() - 1; // don't include null char
+	return StrConst().Size() - 1; // don't include null char
 }
 
 bool ff::String::empty() const
 {
-	return _str->Size() == 1;
+	return StrConst().Size() == 1;
 }
 
 size_t ff::String::max_size() const
@@ -606,7 +594,7 @@ size_t ff::String::max_size() const
 
 size_t ff::String::capacity() const
 {
-	return _str->Allocated() - 1;
+	return StrConst().Allocated() - 1;
 }
 
 void ff::String::clear()
@@ -622,8 +610,7 @@ void ff::String::resize(size_t count)
 {
 	if (count > size())
 	{
-		make_editable();
-		_str->InsertDefault(size(), count - size());
+		Str().InsertDefault(size(), count - size());
 	}
 	else if (count < size())
 	{
@@ -645,14 +632,12 @@ void ff::String::resize(size_t count, wchar_t ch)
 
 void ff::String::reserve(size_t alloc)
 {
-	make_editable();
-	_str->Reserve(alloc + 1);
+	Str().Reserve(alloc + 1);
 }
 
 void ff::String::shrink_to_fit()
 {
-	make_editable();
-	_str->Reduce();
+	Str().Reduce();
 }
 
 size_t ff::String::copy(wchar_t * out, size_t count, size_t pos)
@@ -666,7 +651,7 @@ size_t ff::String::copy(wchar_t * out, size_t count, size_t pos)
 	return count;
 }
 
-void ff::String::swap(String &rhs)
+void ff::String::swap(StringOut rhs)
 {
 	std::swap(_str, rhs._str);
 }
@@ -729,14 +714,8 @@ ff::String ff::String::from_static(const wchar_t *str, size_t len)
 	assertRetVal(str, result);
 	noAssertRetVal(*str, result);
 
-	result.make_editable();
-	result._str->SetStaticData(str, ((len == npos) ? wcslen(str) : len) + 1);
+	result.Str().SetStaticData(str, ((len == npos) ? wcslen(str) : len) + 1);
 	return result;
-}
-
-BSTR ff::String::bstr() const
-{
-	return ::SysAllocStringLen(c_str(), static_cast<UINT>(length()));
 }
 
 #if METRO_APP
@@ -754,7 +733,7 @@ ff::String ff::String::from_pstring(Platform::String ^str)
 }
 #endif
 
-size_t ff::String::find(const String &rhs, size_t pos) const
+size_t ff::String::find(StringRef rhs, size_t pos) const
 {
 	return find(rhs.c_str(), pos, rhs.size());
 }
@@ -795,7 +774,7 @@ size_t ff::String::find(wchar_t ch, size_t pos) const
 	return find(&ch, pos, 1);
 }
 
-size_t ff::String::rfind(const String &rhs, size_t pos) const
+size_t ff::String::rfind(StringRef rhs, size_t pos) const
 {
 	return rfind(rhs.c_str(), pos, rhs.size());
 }
@@ -849,7 +828,7 @@ size_t ff::String::rfind(wchar_t ch, size_t pos) const
 	return rfind(&ch, pos, 1);
 }
 
-size_t ff::String::find_first_of(const String &rhs, size_t pos) const
+size_t ff::String::find_first_of(StringRef rhs, size_t pos) const
 {
 	return find_first_of(rhs.c_str(), pos, rhs.size());
 }
@@ -881,7 +860,7 @@ size_t ff::String::find_first_of(wchar_t ch, size_t pos) const
 	return find_first_of(&ch, pos, 1);
 }
 
-size_t ff::String::find_last_of(const String &rhs, size_t pos) const
+size_t ff::String::find_last_of(StringRef rhs, size_t pos) const
 {
 	return find_last_of(rhs.c_str(), pos, rhs.size());
 }
@@ -921,7 +900,7 @@ size_t ff::String::find_last_of(wchar_t ch, size_t pos) const
 	return find_last_of(&ch, pos, 1);
 }
 
-size_t ff::String::find_first_not_of(const String &rhs, size_t pos) const
+size_t ff::String::find_first_not_of(StringRef rhs, size_t pos) const
 {
 	return find_first_not_of(rhs.c_str(), pos, rhs.size());
 }
@@ -959,7 +938,7 @@ size_t ff::String::find_first_not_of(wchar_t ch, size_t pos) const
 	return find_first_not_of(&ch, pos, 1);
 }
 
-size_t ff::String::find_last_not_of(const String &rhs, size_t pos) const
+size_t ff::String::find_last_not_of(StringRef rhs, size_t pos) const
 {
 	return find_last_not_of(rhs.c_str(), pos, rhs.size());
 }
@@ -1005,12 +984,12 @@ size_t ff::String::find_last_not_of(wchar_t ch, size_t pos) const
 	return find_last_not_of(&ch, pos, 1);
 }
 
-int ff::String::compare(const String &rhs, size_t rhs_pos, size_t rhs_count) const
+int ff::String::compare(StringRef rhs, size_t rhs_pos, size_t rhs_count) const
 {
 	return compare(0, size(), rhs.c_str(), rhs.size());
 }
 
-int ff::String::compare(size_t pos, size_t count, const String &rhs, size_t rhs_pos, size_t rhs_count) const
+int ff::String::compare(size_t pos, size_t count, StringRef rhs, size_t rhs_pos, size_t rhs_count) const
 {
 	if (rhs_count == INVALID_SIZE || rhs_pos + rhs_count > rhs.size())
 	{
@@ -1052,9 +1031,15 @@ int ff::String::compare(size_t pos, size_t count, const wchar_t *rhs, size_t rhs
 	return static_cast<int>(count) - static_cast<int>(rhs_count);
 }
 
-void ff::String::make_editable()
+ff::SharedStringVectorAllocator::StringVector &ff::String::Str()
 {
 	SharedStringVectorAllocator::SharedStringVector::GetUnshared(&_str);
+	return *_str;
+}
+
+const ff::SharedStringVectorAllocator::StringVector &ff::String::StrConst() const
+{
+	return *_str;
 }
 
 ff::StaticString::StaticString(const wchar_t *sz, size_t len)

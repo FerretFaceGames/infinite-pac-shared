@@ -142,15 +142,25 @@ void ff::AutoResourceValue::Init(SharedResourceValue value)
 	_value = value;
 }
 
+bool ff::AutoResourceValue::DidInit() const
+{
+	return _value != nullptr;
+}
+
 ff::Value *ff::AutoResourceValue::Flush()
 {
-	ff::ComPtr<ff::IResources> owner = _value->GetLoadingOwner();
-	if (owner)
+	if (DidInit())
 	{
-		_value = owner->FlushResource(_value);
+		ff::ComPtr<ff::IResources> owner = _value->GetLoadingOwner();
+		if (owner)
+		{
+			_value = owner->FlushResource(_value);
+		}
+
+		return GetValue();
 	}
 
-	return GetValue();
+	return nullptr;
 }
 
 ff::StringRef ff::AutoResourceValue::GetName()

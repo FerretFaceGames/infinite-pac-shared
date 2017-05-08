@@ -6,7 +6,7 @@ namespace ff
 {
 	// These return false on failure, but also set the value to the default value
 	UTIL_API bool RegGetValue(HKEY key, StringRef name, DWORD &value, DWORD dwDefault = 0);
-	UTIL_API bool RegGetValue(HKEY key, StringRef name, String &value, StringRef defaultValue = GetEmptyString());
+	UTIL_API bool RegGetValue(HKEY key, StringRef name, StringOut value, StringRef defaultValue = GetEmptyString());
 	UTIL_API bool RegGetValue(HKEY key, StringRef name, GUID &guidValue, REFGUID guidDefault = GUID_NULL);
 
 	UTIL_API bool RegSetValue(HKEY key, StringRef name, DWORD value);
@@ -16,8 +16,8 @@ namespace ff
 	UTIL_API bool RegDeleteValue(HKEY key, StringRef name);
 	UTIL_API bool RegDeleteKey(HKEY parentKey, StringRef keyName);
 
-	UTIL_API bool RegEnumKey(HKEY key, DWORD nIndex, String &outName);
-	UTIL_API bool RegEnumValue(HKEY key, DWORD nIndex, String &outName, LPDWORD pType = nullptr);
+	UTIL_API bool RegEnumKey(HKEY key, DWORD nIndex, StringOut outName);
+	UTIL_API bool RegEnumValue(HKEY key, DWORD nIndex, StringOut outName, LPDWORD pType = nullptr);
 
 	class CRegKey
 	{

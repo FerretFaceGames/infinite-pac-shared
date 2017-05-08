@@ -1,6 +1,4 @@
 #include "pch.h"
-#include <robuffer.h>
-
 #include "COM/ComObject.h"
 #include "Data/Data.h"
 #include "Data/DataFile.h"
@@ -10,6 +8,10 @@
 #include "Thread/ThreadDispatch.h"
 #include "Thread/ThreadUtil.h"
 #include "Windows/FileUtil.h"
+
+#if METRO_APP
+#include <robuffer.h>
+#endif
 
 namespace ff
 {

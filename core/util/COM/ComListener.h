@@ -11,7 +11,7 @@ namespace ff
 
 		// Triggers all listeners to be called:
 		static void CallOnConstruct(IUnknown *unkOuter, REFGUID catid, REFGUID clsid, IUnknown *pObj);
-		static void CallOnDestruct (REFGUID catid, REFGUID clsid, IUnknown *pObj);
+		static void CallOnDestruct(REFGUID catid, REFGUID clsid, IUnknown *pObj);
 	};
 
 	class __declspec(uuid("547edb98-0447-410a-93aa-6955755a4b03")) __declspec(novtable)

@@ -1,6 +1,5 @@
 #include "pch.h"
 #include "App/Log.h"
-#include "App/State.h"
 #include "Audio/AudioDevice.h"
 #include "Audio/AudioFactory.h"
 #include "Data/Data.h"
@@ -19,6 +18,9 @@
 #include "Input/Joystick/JoystickInput.h"
 #include "Input/KeyboardDevice.h"
 #include "Input/PointerDevice.h"
+#include "State/FpsDisplay.h"
+#include "State/States.h"
+#include "State/StateWrapper.h"
 #include "String/StringUtil.h"
 #include "Thread/ThreadPool.h"
 #include "Thread/ThreadDispatch.h"
@@ -736,29 +738,6 @@ void ff::MetroGlobals::OnSwapChainSizeChanged(Platform::Object ^sender, Windows:
 	UpdateSwapChain();
 }
 
-std::shared_ptr<ff::State> ff::MetroGlobals::SetRenderLoopState(const std::shared_ptr<ff::State> &state)
-{
-	assert(!ff::GetMainThreadDispatch()->IsCurrentThread());
-	std::shared_ptr<State> oldState = _gameState;
-
-	if (state && state != _gameState)
-	{
-		if (_gameState)
-		{
-			_gameState->SaveState(this);
-		}
-
-		_gameState = state;
-
-		if (_gameState)
-		{
-			_gameState->LoadState(this);
-		}
-	}
-
-	return oldState;
-}
-
 void ff::MetroGlobals::StartRenderLoop()
 {
 	assert(ff::GetMainThreadDispatch()->IsCurrentThread());
@@ -774,29 +753,33 @@ void ff::MetroGlobals::StartRenderLoop()
 	{
 		::WriteLog(L"APP_RENDER_START");
 
-		if (_gameState == nullptr && _initialStateFactory != nullptr)
+		if (_gameState == nullptr)
 		{
-			_gameState = _initialStateFactory(this);
-		}
+			std::shared_ptr<States> states = std::make_shared<States>();
+			states->AddBottom(std::make_shared<FpsDisplay>());
+			_gameState = std::make_shared<StateWrapper>(states);
 
-		if (_gameState != nullptr)
-		{
-			_gameState->LoadState(this);
-
-			auto workItem = [this](Windows::Foundation::IAsyncAction ^action)
+			if (_initialStateFactory != nullptr)
 			{
-				RenderLoopThread();
-			};
-
-			auto workItemHandler = ref new Windows::System::Threading::WorkItemHandler(workItem);
-
-			_gameLoopAction = Windows::System::Threading::ThreadPool::RunAsync(
-				workItemHandler,
-				Windows::System::Threading::WorkItemPriority::High,
-				Windows::System::Threading::WorkItemOptions::TimeSliced);
-
-			ff::WaitForEventAndReset(_gameLoopEvent);
+				states->AddBottom(_initialStateFactory(this));
+			}
 		}
+
+		_gameState->LoadState(this);
+
+		auto workItem = [this](Windows::Foundation::IAsyncAction ^action)
+		{
+			RenderLoopThread();
+		};
+
+		auto workItemHandler = ref new Windows::System::Threading::WorkItemHandler(workItem);
+
+		_gameLoopAction = Windows::System::Threading::ThreadPool::RunAsync(
+			workItemHandler,
+			Windows::System::Threading::WorkItemPriority::High,
+			Windows::System::Threading::WorkItemOptions::TimeSliced);
+
+		ff::WaitForEventAndReset(_gameLoopEvent);
 	}
 }
 
@@ -841,11 +824,16 @@ void ff::MetroGlobals::RenderLoopThread()
 
 	::SetEvent(_gameLoopEvent);
 
-	while (_gameState && (_gameLoopAction == nullptr || _gameLoopAction->Status == Windows::Foundation::AsyncStatus::Started))
+	while (_gameLoopAction == nullptr || _gameLoopAction->Status == Windows::Foundation::AsyncStatus::Started)
 	{
+		if (_gameState->GetStatus() == State::Status::Dead)
+		{
+			break;
+		}
+
 		if (FrameAdvanceAndRender())
 		{
-			if (_target && !_target->Present(_frameTime._advanceCount <= 1))
+			if (_target && !_target->Present(true))
 			{
 				ValidateGraphDevice();
 			}
@@ -943,9 +931,12 @@ bool ff::MetroGlobals::FrameAdvanceAndRender()
 		}
 
 		FrameAdvanceResources();
-		SetRenderLoopState(_gameState->Advance(this));
+		_gameState->Advance(this);
 
-		_frameTime._advanceTime[_frameTime._advanceCount - 1] = _timer.GetCurrentStoredRawTime();
+		if (_frameTime._advanceCount > 0)
+		{
+			_frameTime._advanceTime[_frameTime._advanceCount - 1] = _timer.GetCurrentStoredRawTime();
+		}
 	}
 
 	return FrameRender();
@@ -984,6 +975,7 @@ bool ff::MetroGlobals::FrameRender()
 	_depth->Discard();
 
 	_frameTime._renderTime = _timer.GetCurrentStoredRawTime();
+	_globalTime._renderCount++;
 
 	return true;
 }

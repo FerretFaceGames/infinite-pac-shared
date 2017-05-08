@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Dict/Value.h"
+#include "Module/Module.h"
 
 namespace ff
 {
@@ -45,6 +46,7 @@ namespace ff
 
 		UTIL_API void Init(IResources *resources, StringRef name);
 		UTIL_API void Init(SharedResourceValue value);
+		UTIL_API bool DidInit() const;
 		UTIL_API Value *Flush();
 
 		UTIL_API ff::StringRef GetName();
@@ -74,6 +76,7 @@ namespace ff
 		void Init(StringRef name);
 		void Init(const wchar_t *name);
 		void Init(SharedResourceValue value);
+		bool DidInit() const;
 		T *Flush();
 
 		typedef std::function<void(ComPtr<T>&)> FilterFunc;
@@ -167,6 +170,12 @@ void ff::TypedResource<T>::Init(SharedResourceValue value)
 	_object.Release();
 	_objectValue.Release();
 	_value.Init(value);
+}
+
+template<typename T>
+bool ff::TypedResource<T>::DidInit() const
+{
+	return _value.DidInit();
 }
 
 template<typename T>

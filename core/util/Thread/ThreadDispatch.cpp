@@ -22,6 +22,7 @@ public:
 
 	// IThreadDispatch
 	virtual void Post(std::function<void()> func, bool runIfCurrentThread) override;
+	virtual void Send(std::function<void()> func) override;
 	virtual bool IsCurrentThread() const override;
 	virtual DWORD GetThreadId() const override;
 	virtual void Flush() override;
@@ -34,17 +35,23 @@ public:
 #endif
 
 private:
+	IThreadDispatch *InternalPost(std::function<void()> &&func, bool runIfCurrentThread);
 	void Flush(bool force);
 	void PostFlush();
 
 	struct Entry
 	{
+		Entry(std::function<void()> &&func)
+			: _func(std::move(func))
+		{
+		}
+
 		std::function<void()> _func;
 	};
 
 	DWORD _threadId;
 	ff::Mutex _cs;
-	ff::List<Entry> _funcs;
+	std::vector<Entry> _funcs;
 	ff::WinHandle _flushedEvent;
 	ff::WinHandle _pendingEvent;
 #if METRO_APP
@@ -169,7 +176,21 @@ bool ThreadDispatch::Init()
 
 void ThreadDispatch::Post(std::function<void()> func, bool runIfCurrentThread)
 {
-	assertRet(func != nullptr);
+	InternalPost(std::move(func), runIfCurrentThread);
+}
+
+void ThreadDispatch::Send(std::function<void()> func)
+{
+	IThreadDispatch *dispatch = InternalPost(std::move(func), true);
+	if (dispatch)
+	{
+		dispatch->Flush();
+	}
+}
+
+ff::IThreadDispatch *ThreadDispatch::InternalPost(std::function<void()> &&func, bool runIfCurrentThread)
+{
+	assertRetVal(func != nullptr, nullptr);
 
 	if (!_threadId)
 	{
@@ -186,20 +207,19 @@ void ThreadDispatch::Post(std::function<void()> func, bool runIfCurrentThread)
 			func();
 		}
 
-		return;
+		return otherDispatch;
 	}
 
 	if (runIfCurrentThread && IsCurrentThread())
 	{
 		func();
-		return;
+		return nullptr;
 	}
 
 	ff::LockMutex lock(_cs);
-	Entry &entry = _funcs.Insert();
-	entry._func = std::move(func);
+	_funcs.emplace_back(std::move(func));
 
-	if (_funcs.Size() == 1)
+	if (_funcs.size() == 1)
 	{
 		::ResetEvent(_flushedEvent);
 
@@ -209,6 +229,8 @@ void ThreadDispatch::Post(std::function<void()> func, bool runIfCurrentThread)
 			PostFlush();
 		}
 	}
+
+	return this;
 }
 
 bool ThreadDispatch::IsCurrentThread() const
@@ -290,11 +312,11 @@ void ThreadDispatch::Flush(bool force)
 {
 	if (force || IsCurrentThread())
 	{
-		ff::List<Entry> funcs;
+		std::vector<Entry> funcs;
 		{
 			ff::LockMutex lock(_cs);
-			funcs = _funcs;
-			_funcs.Clear();
+			funcs = std::move(_funcs);
+			assert(_funcs.empty());
 		}
 
 		for (Entry &entry : funcs)
@@ -303,7 +325,7 @@ void ThreadDispatch::Flush(bool force)
 		}
 
 		ff::LockMutex lock(_cs);
-		if (_funcs.IsEmpty())
+		if (_funcs.empty())
 		{
 			::SetEvent(_flushedEvent);
 			::ResetEvent(_pendingEvent);

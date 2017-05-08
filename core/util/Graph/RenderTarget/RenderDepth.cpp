@@ -201,7 +201,7 @@ bool ff::RenderDepth::CreateTextureAndView(PointInt size, DXGI_FORMAT format, si
 	descTex.SampleDesc.Count = nMultiSamples ? (UINT)nMultiSamples : 1;
 	descTex.Usage = D3D11_USAGE_DEFAULT;
 
-	assertHrRetVal(_device->GetDX()->CreateTexture2D(&descTex, nullptr, &_texture), false);
+	assertHrRetVal(_device->Get3d()->CreateTexture2D(&descTex, nullptr, &_texture), false);
 
 	D3D11_DEPTH_STENCIL_VIEW_DESC desc;
 	ZeroObject(desc);
@@ -209,7 +209,7 @@ bool ff::RenderDepth::CreateTextureAndView(PointInt size, DXGI_FORMAT format, si
 	desc.Format = format;
 	desc.ViewDimension = (descTex.SampleDesc.Count > 1) ? D3D11_DSV_DIMENSION_TEXTURE2DMS : D3D11_DSV_DIMENSION_TEXTURE2D;
 
-	assertHrRetVal(_device->GetDX()->CreateDepthStencilView(_texture, &desc, &_view), false);
+	assertHrRetVal(_device->Get3d()->CreateDepthStencilView(_texture, &desc, &_view), false);
 
 	_size = size;
 

@@ -4,6 +4,8 @@ namespace ff
 {
 	struct FrameTime;
 	struct GlobalTime;
+	class I2dRenderer;
+	class I2dEffect;
 	class IAudioDevice;
 	class IGraphDevice;
 	class IRenderTargetWindow;
@@ -11,8 +13,7 @@ namespace ff
 	class IPointerDevice;
 	class IKeyboardDevice;
 	class IJoystickInput;
-	class I2dRenderer;
-	class I2dEffect;
+	class IThreadDispatch;
 
 	class AppGlobals
 	{
@@ -26,6 +27,7 @@ namespace ff
 		virtual IJoystickInput *GetJoysticks() const = 0;
 		virtual I2dRenderer *Get2dRender() const = 0;
 		virtual I2dEffect *Get2dEffect() const = 0;
+		virtual IThreadDispatch *GetGameDispatch() const = 0;
 		virtual const GlobalTime &GetGlobalTime() const = 0;
 		virtual const FrameTime &GetFrameTime() const = 0;
 	};

@@ -9,8 +9,10 @@ obj/
 # files
 *.ipch
 *.log
+*.opendb
 *.opensdf
 *.sdf
 *.suo
 *.user
 *.vspscc
+

@@ -21,7 +21,7 @@ namespace ff
 		virtual bool Convert(DXGI_FORMAT format, size_t nMipMapLevels, IGraphTexture **ppNewTexture) = 0;
 	};
 
-	UTIL_API DXGI_FORMAT ParseTextureFormat(const String &szFormat);
+	UTIL_API DXGI_FORMAT ParseTextureFormat(StringRef szFormat);
 
 	UTIL_API bool CreateGraphTexture(
 		IGraphDevice *pDevice,

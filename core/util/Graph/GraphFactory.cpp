@@ -5,64 +5,66 @@
 #include "Graph/GraphDevice.h"
 #include "Graph/GraphFactory.h"
 
+class __declspec(uuid("b38739e9-19e5-4cec-8065-6bb784f7ad39"))
+	GraphicFactory
+		: public ff::ComBase
+		, public ff::IGraphicFactory
+		, public ff::IComListener
+{
+public:
+	DECLARE_HEADER(GraphicFactory);
+
+	bool Init();
+
+	// IComListener
+	virtual void OnConstruct(IUnknown *unkOuter, REFGUID catid, REFGUID clsid, IUnknown *pObj) override;
+	virtual void OnDestruct(REFGUID catid, REFGUID clsid, IUnknown *pObj) override;
+
+	// IGraphicFactory
+	virtual IDXGIFactoryX *GetDXGI() override;
+	virtual ID2D1FactoryX *GetFactory2d() override;
+
+	virtual bool CreateDevice(IDXGIAdapterX *pCard, ff::IGraphDevice **device) override;
+	virtual bool CreateSoftwareDevice(ff::IGraphDevice **device) override;
+
+	virtual size_t GetDeviceCount() const override;
+	virtual ff::IGraphDevice *GetDevice(size_t nIndex) const override;
+
+	virtual ff::Vector<ff::ComPtr<IDXGIAdapterX>> GetAdapters() override;
+	virtual ff::Vector<ff::ComPtr<IDXGIOutputX>> GetOutputs(IDXGIAdapterX *pCard) override;
+
+#if !METRO_APP
+	virtual bool GetAdapterForWindow(HWND hwnd, IDXGIAdapterX **ppCard, IDXGIOutputX **ppOutput) override;
+	virtual bool GetAdapterForMonitor(HMONITOR hMonitor, IDXGIAdapterX **ppCard, IDXGIOutputX **ppOutput) override;
+#endif
+
+private:
+	ff::Mutex _mutex;
+	ff::ComPtr<ff::IProxyComListener> _listener;
+	ff::ComPtr<IDXGIFactoryX> _dxgi;
+	ff::ComPtr<ID2D1FactoryX> _factory2d;
+	ff::Vector<ff::IGraphDevice *> _devices;
+};
+
 namespace ff
 {
-	class __declspec(uuid("b38739e9-19e5-4cec-8065-6bb784f7ad39"))
-		GraphicFactory
-			: public ComBase
-			, public IGraphicFactory
-			, public IComListener
-	{
-	public:
-		DECLARE_HEADER(GraphicFactory);
-
-		bool Init();
-
-		// IComListener
-		virtual void OnConstruct(IUnknown *unkOuter, REFGUID catid, REFGUID clsid, IUnknown *pObj) override;
-		virtual void OnDestruct (REFGUID catid, REFGUID clsid, IUnknown *pObj) override;
-
-		// IGraphicFactory
-		virtual IDXGIFactoryX *GetDXGI() override;
-
-		virtual bool CreateDevice(IDXGIAdapterX *pCard, IGraphDevice **device) override;
-		virtual bool CreateSoftwareDevice(IGraphDevice **device) override;
-
-		virtual size_t GetDeviceCount() const override;
-		virtual IGraphDevice *GetDevice(size_t nIndex) const override;
-
-		virtual Vector<ComPtr<IDXGIAdapterX>> GetAdapters() override;
-		virtual Vector<ComPtr<IDXGIOutputX>> GetOutputs(IDXGIAdapterX *pCard) override;
-
-	#if !METRO_APP
-		virtual bool GetAdapterForWindow(HWND hwnd, IDXGIAdapterX **ppCard, IDXGIOutputX **ppOutput) override;
-		virtual bool GetAdapterForMonitor(HMONITOR hMonitor, IDXGIAdapterX **ppCard, IDXGIOutputX **ppOutput) override;
-	#endif
-
-	private:
-		Mutex _mutex;
-		ComPtr<IProxyComListener> _listener;
-		ComPtr<IDXGIFactoryX> _dxgi;
-		Vector<IGraphDevice *> _devices;
-	};
-
-	bool CreateHardwareGraphDevice(IGraphDevice **device);
-	bool CreateSoftwareGraphDevice(IGraphDevice **device);
-	bool CreateGraphDevice(IDXGIAdapterX *pCard, IGraphDevice **device);
+	bool CreateHardwareGraphDevice(ff::IGraphDevice **device);
+	bool CreateSoftwareGraphDevice(ff::IGraphDevice **device);
+	bool CreateGraphDevice(IDXGIAdapterX *pCard, ff::IGraphDevice **device);
 }
 
-BEGIN_INTERFACES(ff::GraphicFactory)
+BEGIN_INTERFACES(GraphicFactory)
 	HAS_INTERFACE(ff::IGraphicFactory)
 	HAS_INTERFACE(ff::IComListener)
 END_INTERFACES()
 
-bool ff::CreateGraphicFactory(IGraphicFactory **ppObj)
+bool ff::CreateGraphicFactory(ff::IGraphicFactory **ppObj)
 {
 	assertRetVal(ppObj, false);
 	*ppObj = nullptr;
 
-	ComPtr<GraphicFactory, IGraphicFactory> pObj;
-	assertHrRetVal(ComAllocator<GraphicFactory>::CreateInstance(&pObj), false);
+	ComPtr<GraphicFactory, ff::IGraphicFactory> pObj;
+	assertHrRetVal(ff::ComAllocator<GraphicFactory>::CreateInstance(&pObj), false);
 	assertRetVal(pObj->Init(), false);
 
 	*ppObj = pObj.Detach();
@@ -83,37 +85,37 @@ bool ff::GetParentDXGI(IUnknown *pObject, REFGUID iid, void **ppParent)
 	return true;
 }
 
-ff::GraphicFactory::GraphicFactory()
+GraphicFactory::GraphicFactory()
 {
 	verify(CreateProxyComListener(this, &_listener));
 }
 
-ff::GraphicFactory::~GraphicFactory()
+GraphicFactory::~GraphicFactory()
 {
 	_listener->SetOwner(nullptr);
 }
 
-bool ff::GraphicFactory::Init()
+bool GraphicFactory::Init()
 {
 	return true;
 }
 
-size_t ff::GraphicFactory::GetDeviceCount() const
+size_t GraphicFactory::GetDeviceCount() const
 {
 	return _devices.Size();
 }
 
-ff::IGraphDevice *ff::GraphicFactory::GetDevice(size_t nIndex) const
+ff::IGraphDevice *GraphicFactory::GetDevice(size_t nIndex) const
 {
 	assertRetVal(nIndex >= 0 && nIndex < _devices.Size(), nullptr);
 	return _devices[nIndex];
 }
 
-IDXGIFactoryX *ff::GraphicFactory::GetDXGI()
+IDXGIFactoryX *GraphicFactory::GetDXGI()
 {
 	if (_dxgi && _dxgi->IsCurrent() != S_OK)
 	{
-		LockMutex crit(_mutex);
+		ff::LockMutex crit(_mutex);
 
 		if (_dxgi && _dxgi->IsCurrent() != S_OK)
 		{
@@ -123,7 +125,7 @@ IDXGIFactoryX *ff::GraphicFactory::GetDXGI()
 
 	if (!_dxgi)
 	{
-		LockMutex crit(_mutex);
+		ff::LockMutex crit(_mutex);
 
 		if (!_dxgi)
 		{
@@ -134,13 +136,29 @@ IDXGIFactoryX *ff::GraphicFactory::GetDXGI()
 	return _dxgi;
 }
 
-bool ff::GraphicFactory::CreateDevice(IDXGIAdapterX *pCard, IGraphDevice **device)
+ID2D1FactoryX *GraphicFactory::GetFactory2d()
+{
+	if (!_factory2d)
+	{
+		ff::LockMutex crit(_mutex);
+
+		if (!_factory2d)
+		{
+			D2D1_FACTORY_OPTIONS options;
+			options.debugLevel = ff::GetThisModule().IsDebugBuild() ? D2D1_DEBUG_LEVEL_NONE : D2D1_DEBUG_LEVEL_WARNING;
+			assertHrRetVal(::D2D1CreateFactory(D2D1_FACTORY_TYPE_MULTI_THREADED, __uuidof(ID2D1FactoryX), &options, (void**)&_factory2d), nullptr);
+		}
+	}
+
+	return _factory2d;
+}
+
+bool GraphicFactory::CreateDevice(IDXGIAdapterX *pCard, ff::IGraphDevice **device)
 {
 	assertRetVal(device && GetDXGI(), false);
 	*device = nullptr;
 
-	ComPtr<IGraphDevice> pDevice;
-
+	ff::ComPtr<ff::IGraphDevice> pDevice;
 	if (pCard)
 	{
 		assertRetVal(CreateGraphDevice(pCard, &pDevice), false);
@@ -151,35 +169,35 @@ bool ff::GraphicFactory::CreateDevice(IDXGIAdapterX *pCard, IGraphDevice **devic
 	}
 
 	_devices.Push(pDevice);
-	AddComListener(pDevice.Interface(), _listener);
+	ff::AddComListener(pDevice.Interface(), _listener);
 	*device = pDevice.Detach();
 
 	return true;
 }
 
-bool ff::GraphicFactory::CreateSoftwareDevice(IGraphDevice **device)
+bool GraphicFactory::CreateSoftwareDevice(ff::IGraphDevice **device)
 {
 	assertRetVal(device && GetDXGI(), false);
 	*device = nullptr;
 
-	ComPtr<IGraphDevice> pDevice;
+	ff::ComPtr<ff::IGraphDevice> pDevice;
 	assertRetVal(CreateGraphDevice(nullptr, &pDevice), false);
 
 	_devices.Push(pDevice);
-	AddComListener(pDevice.Interface(), _listener);
+	ff::AddComListener(pDevice.Interface(), _listener);
 	*device = pDevice.Detach();
 
 	return true;
 }
 
-ff::Vector<ff::ComPtr<IDXGIAdapterX>> ff::GraphicFactory::GetAdapters()
+ff::Vector<ff::ComPtr<IDXGIAdapterX>> GraphicFactory::GetAdapters()
 {
-	Vector<ComPtr<IDXGIAdapterX>> cards;
+	ff::Vector<ff::ComPtr<IDXGIAdapterX>> cards;
 
-	ComPtr<IDXGIAdapter1> pCard;
+	ff::ComPtr<IDXGIAdapter1> pCard;
 	for (UINT i = 0; GetDXGI() && SUCCEEDED(GetDXGI()->EnumAdapters1(i++, &pCard)); pCard = nullptr)
 	{
-		ComPtr<IDXGIAdapterX> pCardX;
+		ff::ComPtr<IDXGIAdapterX> pCardX;
 		if (pCardX.QueryFrom(pCard))
 		{
 			cards.Push(pCardX);
@@ -189,12 +207,12 @@ ff::Vector<ff::ComPtr<IDXGIAdapterX>> ff::GraphicFactory::GetAdapters()
 	return cards;
 }
 
-ff::Vector<ff::ComPtr<IDXGIOutputX>> ff::GraphicFactory::GetOutputs(IDXGIAdapterX *pCard)
+ff::Vector<ff::ComPtr<IDXGIOutputX>> GraphicFactory::GetOutputs(IDXGIAdapterX *pCard)
 {
-	ComPtr<IDXGIOutput>   pOutput;
-	ComPtr<IDXGIAdapter1> pDefaultCard;
-	ComPtr<IDXGIAdapterX> pDefaultCardX;
-	Vector<ComPtr<IDXGIOutputX>> outputs;
+	ff::ComPtr<IDXGIOutput> pOutput;
+	ff::ComPtr<IDXGIAdapter1> pDefaultCard;
+	ff::ComPtr<IDXGIAdapterX> pDefaultCardX;
+	ff::Vector<ff::ComPtr<IDXGIOutputX>> outputs;
 
 	if (!pCard && SUCCEEDED(GetDXGI()->EnumAdapters1(0, &pDefaultCard)))
 	{
@@ -206,7 +224,7 @@ ff::Vector<ff::ComPtr<IDXGIOutputX>> ff::GraphicFactory::GetOutputs(IDXGIAdapter
 
 	for (UINT i = 0; pCard && SUCCEEDED(pCard->EnumOutputs(i++, &pOutput)); pOutput = nullptr)
 	{
-		ComPtr<IDXGIOutputX> pOutputX;
+		ff::ComPtr<IDXGIOutputX> pOutputX;
 		if (pOutputX.QueryFrom(pOutput))
 		{
 			outputs.Push(pOutputX);
@@ -217,7 +235,7 @@ ff::Vector<ff::ComPtr<IDXGIOutputX>> ff::GraphicFactory::GetOutputs(IDXGIAdapter
 }
 
 #if !METRO_APP
-bool ff::GraphicFactory::GetAdapterForWindow(HWND hwnd, IDXGIAdapterX **ppCard, IDXGIOutput **ppOutput)
+bool GraphicFactory::GetAdapterForWindow(HWND hwnd, IDXGIAdapterX **ppCard, IDXGIOutput **ppOutput)
 {
 	assertRetVal(hwnd, false);
 
@@ -253,20 +271,20 @@ static bool DoesAdapterUseMonitor(IDXGIAdapterX *pCard, HMONITOR hMonitor, IDXGI
 #endif
 
 #if !METRO_APP
-bool ff::GraphicFactory::GetAdapterForMonitor(HMONITOR hMonitor, IDXGIAdapterX **ppCard, IDXGIOutputX **ppOutput)
+bool GraphicFactory::GetAdapterForMonitor(HMONITOR hMonitor, IDXGIAdapterX **ppCard, IDXGIOutputX **ppOutput)
 {
 	assertRetVal(hMonitor, false);
 
 	// Try the desktop first
 	{
-		ComPtr<IGraphDevice> pDevice;
+		ff::ComPtr<ff::IGraphDevice> pDevice;
 		if (CreateHardwareGraphDevice(&pDevice))
 		{
 			if (DoesAdapterUseMonitor(pDevice->GetAdapter(), hMonitor, ppOutput))
 			{
 				if (ppCard)
 				{
-					*ppCard = GetAddRef(pDevice->GetAdapter());
+					*ppCard = ff::GetAddRef(pDevice->GetAdapter());
 				}
 
 				return true;
@@ -274,7 +292,7 @@ bool ff::GraphicFactory::GetAdapterForMonitor(HMONITOR hMonitor, IDXGIAdapterX *
 		}
 	}
 
-	Vector<ComPtr<IDXGIAdapterX>> cards = GetAdapters();
+	ff::Vector<ff::ComPtr<IDXGIAdapterX>> cards = GetAdapters();
 	for (size_t i = 0; i < cards.Size(); i++)
 	{
 		if (DoesAdapterUseMonitor(cards[i], hMonitor, ppOutput))
@@ -292,14 +310,14 @@ bool ff::GraphicFactory::GetAdapterForMonitor(HMONITOR hMonitor, IDXGIAdapterX *
 }
 #endif
 
-void ff::GraphicFactory::OnConstruct(IUnknown *unkOuter, REFGUID catid, REFGUID clsid, IUnknown *pObj)
+void GraphicFactory::OnConstruct(IUnknown *unkOuter, REFGUID catid, REFGUID clsid, IUnknown *pObj)
 {
 	assert(false);
 }
 
-void ff::GraphicFactory::OnDestruct(REFGUID catid, REFGUID clsid, IUnknown *pObj)
+void GraphicFactory::OnDestruct(REFGUID catid, REFGUID clsid, IUnknown *pObj)
 {
-	ComPtr<IGraphDevice> pDevice;
+	ff::ComPtr<ff::IGraphDevice> pDevice;
 	assertRet(pDevice.QueryFrom(pObj));
 
 	for (size_t i = 0; i < _devices.Size(); i++)

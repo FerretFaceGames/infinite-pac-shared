@@ -241,7 +241,6 @@ const ff::SpriteData &Sprite::GetSpriteData()
 	return _data;
 }
 
-#include "App/Log.h"
 void Sprite::Init(const ff::SpriteData &data)
 {
 	_texture = data._texture;

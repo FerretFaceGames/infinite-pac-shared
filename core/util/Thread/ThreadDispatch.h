@@ -7,6 +7,7 @@ namespace ff
 	{
 	public:
 		virtual void Post(std::function<void()> func, bool runIfCurrentThread = false) = 0;
+		virtual void Send(std::function<void()> func) = 0;
 		virtual bool IsCurrentThread() const = 0;
 		virtual DWORD GetThreadId() const = 0;
 

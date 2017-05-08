@@ -16,12 +16,6 @@
     <Filter Include="Dict">
       <UniqueIdentifier>{ece3fa59-be40-4240-8729-577707901dad}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Entity">
-      <UniqueIdentifier>{6c739d2a-8a47-498e-9dd4-07408b4a4aec}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Entity\Internal">
-      <UniqueIdentifier>{95ada7df-575a-4a09-83f1-6f1fffec29a5}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Globals">
       <UniqueIdentifier>{26477236-9a84-4c75-8c12-0a7abe846eca}</UniqueIdentifier>
     </Filter>
@@ -76,11 +70,11 @@
     <Filter Include="Input\Joystick">
       <UniqueIdentifier>{c49817df-2f39-4c24-ad80-968cfb417e42}</UniqueIdentifier>
     </Filter>
+    <Filter Include="State">
+      <UniqueIdentifier>{48200a64-d1cb-4aab-934b-4a07ac377295}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="App\Commands.cpp">
-      <Filter>App</Filter>
-    </ClCompile>
     <ClCompile Include="App\Log.cpp">
       <Filter>App</Filter>
     </ClCompile>
@@ -153,24 +147,6 @@
     <ClCompile Include="Dict\Value.cpp">
       <Filter>Dict</Filter>
     </ClCompile>
-    <ClCompile Include="Entity\Internal\Component.cpp">
-      <Filter>Entity\Internal</Filter>
-    </ClCompile>
-    <ClCompile Include="Entity\Internal\ComponentFactory.cpp">
-      <Filter>Entity\Internal</Filter>
-    </ClCompile>
-    <ClCompile Include="Entity\Internal\EntitySystem.cpp">
-      <Filter>Entity\Internal</Filter>
-    </ClCompile>
-    <ClCompile Include="Entity\EntityDomain.cpp">
-      <Filter>Entity</Filter>
-    </ClCompile>
-    <ClCompile Include="Entity\EntityEvents.cpp">
-      <Filter>Entity</Filter>
-    </ClCompile>
-    <ClCompile Include="Entity\EntitySystemBase.cpp">
-      <Filter>Entity</Filter>
-    </ClCompile>
     <ClCompile Include="Globals\GlobalsScope.cpp">
       <Filter>Globals</Filter>
     </ClCompile>
@@ -214,9 +190,6 @@
       <Filter>String</Filter>
     </ClCompile>
     <ClCompile Include="String\StringUtil.cpp">
-      <Filter>String</Filter>
-    </ClCompile>
-    <ClCompile Include="String\SysString.cpp">
       <Filter>String</Filter>
     </ClCompile>
     <ClCompile Include="Thread\Mutex.cpp">
@@ -380,14 +353,20 @@
     <ClCompile Include="Input\Joystick\XboxJoystick.cpp">
       <Filter>Input\Joystick</Filter>
     </ClCompile>
-    <ClCompile Include="App\State.cpp">
-      <Filter>App</Filter>
+    <ClCompile Include="State\FpsDisplay.cpp">
+      <Filter>State</Filter>
+    </ClCompile>
+    <ClCompile Include="State\State.cpp">
+      <Filter>State</Filter>
+    </ClCompile>
+    <ClCompile Include="State\States.cpp">
+      <Filter>State</Filter>
+    </ClCompile>
+    <ClCompile Include="State\StateWrapper.cpp">
+      <Filter>State</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="App\Commands.h">
-      <Filter>App</Filter>
-    </ClInclude>
     <ClInclude Include="App\Log.h">
       <Filter>App</Filter>
     </ClInclude>
@@ -490,39 +469,6 @@
     <ClInclude Include="Dict\Value.h">
       <Filter>Dict</Filter>
     </ClInclude>
-    <ClInclude Include="Entity\Internal\Component.h">
-      <Filter>Entity\Internal</Filter>
-    </ClInclude>
-    <ClInclude Include="Entity\Internal\ComponentFactory.h">
-      <Filter>Entity\Internal</Filter>
-    </ClInclude>
-    <ClInclude Include="Entity\Internal\ComponentFactoryImpl.h">
-      <Filter>Entity\Internal</Filter>
-    </ClInclude>
-    <ClInclude Include="Entity\Internal\EntityDomainImpl.h">
-      <Filter>Entity\Internal</Filter>
-    </ClInclude>
-    <ClInclude Include="Entity\Internal\EntitySystem.h">
-      <Filter>Entity\Internal</Filter>
-    </ClInclude>
-    <ClInclude Include="Entity\Internal\EntitySystemBaseImpl.h">
-      <Filter>Entity\Internal</Filter>
-    </ClInclude>
-    <ClInclude Include="Entity\ComponentBase.h">
-      <Filter>Entity</Filter>
-    </ClInclude>
-    <ClInclude Include="Entity\Entity.h">
-      <Filter>Entity</Filter>
-    </ClInclude>
-    <ClInclude Include="Entity\EntityDomain.h">
-      <Filter>Entity</Filter>
-    </ClInclude>
-    <ClInclude Include="Entity\EntityEvents.h">
-      <Filter>Entity</Filter>
-    </ClInclude>
-    <ClInclude Include="Entity\EntitySystemBase.h">
-      <Filter>Entity</Filter>
-    </ClInclude>
     <ClInclude Include="Globals\GlobalsScope.h">
       <Filter>Globals</Filter>
     </ClInclude>
@@ -574,9 +520,6 @@
     <ClInclude Include="String\StringUtil.h">
       <Filter>String</Filter>
     </ClInclude>
-    <ClInclude Include="String\SysString.h">
-      <Filter>String</Filter>
-    </ClInclude>
     <ClInclude Include="Thread\Mutex.h">
       <Filter>Thread</Filter>
     </ClInclude>
@@ -593,9 +536,6 @@
       <Filter>Types</Filter>
     </ClInclude>
     <ClInclude Include="Types\KeyValue.h">
-      <Filter>Types</Filter>
-    </ClInclude>
-    <ClInclude Include="Types\List.h">
       <Filter>Types</Filter>
     </ClInclude>
     <ClInclude Include="Types\Map.h">
@@ -769,11 +709,20 @@
     <ClInclude Include="Input\Joystick\JoystickInput.h">
       <Filter>Input\Joystick</Filter>
     </ClInclude>
-    <ClInclude Include="App\State.h">
-      <Filter>App</Filter>
-    </ClInclude>
     <ClInclude Include="Globals\AppGlobals.h">
       <Filter>Globals</Filter>
+    </ClInclude>
+    <ClInclude Include="State\FpsDisplay.h">
+      <Filter>State</Filter>
+    </ClInclude>
+    <ClInclude Include="State\State.h">
+      <Filter>State</Filter>
+    </ClInclude>
+    <ClInclude Include="State\States.h">
+      <Filter>State</Filter>
+    </ClInclude>
+    <ClInclude Include="State\StateWrapper.h">
+      <Filter>State</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -795,5 +744,11 @@
     <None Include="Graph\Shader\Assets.Shaders.res.json">
       <Filter>Graph\Shader</Filter>
     </None>
+    <None Include="Resource\Assets.res.json">
+      <Filter>Resource</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="util.natvis" />
   </ItemGroup>
 </Project>

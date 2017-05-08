@@ -18,8 +18,6 @@ ff::ModuleFactory::ModuleFactory(
 	, _startup(startup)
 	, _func(func)
 {
-	assert(_func != nullptr && _name.size() && id != GUID_NULL);
-
 	LockMutex crit(GCS_MODULE_FACTORY);
 
 	if (s_headModuleFactory != nullptr)
@@ -61,9 +59,11 @@ std::unique_ptr<ff::Module> ff::ModuleFactory::Create(StringRef name)
 
 	for (const ModuleFactory *factory = s_headModuleFactory; factory != nullptr; factory = factory->_next)
 	{
-		if (name == factory->_name && factory->_func != nullptr)
+		if (name == factory->_name)
 		{
-			std::unique_ptr<Module> module = factory->_func();
+			std::unique_ptr<Module> module = (factory->_func != nullptr)
+				? factory->_func()
+				: std::make_unique<ff::Module>(factory->_name, factory->_id, factory->GetInstance());
 			assertRetVal(module != nullptr, module);
 
 			InitModule(*module, factory);
@@ -82,9 +82,11 @@ std::unique_ptr<ff::Module> ff::ModuleFactory::Create(REFGUID id)
 
 	for (const ModuleFactory *factory = s_headModuleFactory; factory != nullptr; factory = factory->_next)
 	{
-		if (id == factory->_id && factory->_func != nullptr)
+		if (id == factory->_id)
 		{
-			std::unique_ptr<Module> module = factory->_func();
+			std::unique_ptr<Module> module = (factory->_func != nullptr)
+				? factory->_func()
+				: std::make_unique<ff::Module>(factory->_name, factory->_id, factory->GetInstance());
 			assertRetVal(module != nullptr, module);
 
 			InitModule(*module, factory);
@@ -105,9 +107,11 @@ std::unique_ptr<ff::Module> ff::ModuleFactory::Create(HINSTANCE instance)
 
 	for (const ModuleFactory *factory = s_headModuleFactory; factory != nullptr; factory = factory->_next)
 	{
-		if (instance == factory->GetInstance() && factory->_func != nullptr)
+		if (instance == factory->GetInstance())
 		{
-			std::unique_ptr<Module> module = factory->_func();
+			std::unique_ptr<Module> module = (factory->_func != nullptr)
+				? factory->_func()
+				: std::make_unique<ff::Module>(factory->_name, factory->_id, factory->GetInstance());
 			assertRetVal(module != nullptr, module);
 
 			InitModule(*module, factory);

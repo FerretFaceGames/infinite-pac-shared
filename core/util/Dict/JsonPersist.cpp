@@ -6,8 +6,8 @@
 
 static const size_t INDENT_SPACES = 2;
 
-static bool JsonWriteValue(ff::Value *value, size_t spaces, ff::String &output);
-static void JsonWriteObject(const ff::Dict &dict, size_t spaces, ff::String &output);
+static bool JsonWriteValue(ff::Value *value, size_t spaces, ff::StringOut output);
+static void JsonWriteObject(const ff::Dict &dict, size_t spaces, ff::StringOut output);
 static ff::Dict ParseObject(ff::JsonTokenizer &tokenizer, const wchar_t **errorPos);
 static ff::Vector<ff::ValuePtr> ParseArray(ff::JsonTokenizer &tokenizer, const wchar_t **errorPos);
 
@@ -209,7 +209,7 @@ static ff::String JsonEncode(ff::StringRef value)
 	return output;
 }
 
-static void JsonWriteArray(const ff::Vector<ff::ValuePtr> &values, size_t spaces, ff::String &output)
+static void JsonWriteArray(const ff::Vector<ff::ValuePtr> &values, size_t spaces, ff::StringOut output)
 {
 	output.append(1, '[');
 	
@@ -239,7 +239,7 @@ static void JsonWriteArray(const ff::Vector<ff::ValuePtr> &values, size_t spaces
 	output.append(1, ']');
 }
 
-static bool JsonWriteValue(ff::Value *value, size_t spaces, ff::String &output)
+static bool JsonWriteValue(ff::Value *value, size_t spaces, ff::StringOut output)
 {
 	switch (value->GetType())
 	{
@@ -304,7 +304,7 @@ static bool JsonWriteValue(ff::Value *value, size_t spaces, ff::String &output)
 	return true;
 }
 
-static void JsonWriteObject(const ff::Dict &dict, size_t spaces, ff::String &output)
+static void JsonWriteObject(const ff::Dict &dict, size_t spaces, ff::StringOut output)
 {
 	output.append(1, '{');
 

@@ -1,7 +1,6 @@
 ﻿#pragma once
 
 #include "App.g.h"
-#include "TelemetryClient.h"
 
 namespace ff
 {
@@ -28,7 +27,6 @@ namespace Maze
 		static property App ^Current { App ^get(); }
 		static property MainPage ^Page { MainPage ^get(); }
 		static property Windows::UI::Xaml::Controls::SwapChainPanel ^Panel { Windows::UI::Xaml::Controls::SwapChainPanel ^get(); }
-		static property ApplicationInsights::core::TelemetryClient *TelemetryClient { ApplicationInsights::core::TelemetryClient *get(); }
 
 	private:
 		void InitializeProcess();
@@ -39,7 +37,6 @@ namespace Maze
 
 		std::unique_ptr<ff::ProcessGlobals> _processGlobals;
 		std::unique_ptr<ff::MetroGlobals> _globals;
-		std::unique_ptr<ApplicationInsights::core::TelemetryClient> _telemetryClient;
 		Windows::UI::Xaml::Controls::Primitives::Popup ^_popup;
 		Windows::Foundation::EventRegistrationToken _popupClosedToken;
 	};

@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "Module/ModuleFactory.h"
 #include "Module/Modules.h"
+#include "Resource/Resources.h"
 
 ff::Modules::Modules()
 {
@@ -122,6 +123,22 @@ ff::Vector<HINSTANCE> ff::Modules::GetAllInstances() const
 	return ModuleFactory::GetAllInstances();
 }
 
+bool ff::Modules::AreResourcesLoading() const
+{
+	LockMutex lock(_mutex);
+
+	for (auto &module : _modules)
+	{
+		if (module->GetResources()->IsLoading())
+		{
+			return true;
+		}
+	}
+
+	return false;
+
+}
+
 const ff::ModuleClassInfo *ff::Modules::FindClassInfo(ff::StringRef name)
 {
 	LockMutex lock(_mutex);
@@ -195,6 +212,30 @@ const ff::ModuleClassInfo *ff::Modules::FindClassInfoForInterface(REFGUID interf
 	}
 
 	return nullptr;
+}
+
+bool ff::Modules::FindClassFactory(REFGUID classId, IClassFactory **factory)
+{
+	LockMutex lock(_mutex);
+
+	// First try modules that were already created
+	for (size_t i = 0; i < 2; i++)
+	{
+		if (i == 1)
+		{
+			CreateAllModules();
+		}
+
+		for (auto &module : _modules)
+		{
+			if (module->GetClassFactory(classId, factory))
+			{
+				return true;
+			}
+		}
+	}
+
+	return false;
 }
 
 const ff::ModuleInterfaceInfo *ff::Modules::FindInterfaceInfo(REFGUID interfaceId)

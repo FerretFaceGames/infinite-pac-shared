@@ -6,7 +6,7 @@
     <ConfigurationType>Application</ConfigurationType>
     <ProjectName>Maze</ProjectName>
     <RootNamespace>Maze</RootNamespace>
-    <PackageCertificateThumbprint>9F346A993C7129A0D6EE50DE79CED901923BC6B3</PackageCertificateThumbprint>
+    <PackageCertificateThumbprint>0EA7AF474FF4AD58E60A167337D2C17C45C61613</PackageCertificateThumbprint>
     <PackageCertificateKeyFile>TemporaryKey.pfx</PackageCertificateKeyFile>
     <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
     <AppxBundle>Always</AppxBundle>
@@ -15,11 +15,7 @@
   <Import Project="..\msbuild\cpp.props" />
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>
-        %(AdditionalIncludeDirectories);
-        ..\core\util;
-        ..\core\appinsights-win10\src
-      </AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);..\core\util</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -282,9 +278,6 @@
     <Image Include="Assets\StoreLogo.scale-100.png" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\core\appinsights-win10\AppInsights_Win10-UAP.vcxproj">
-      <Project>{64c33816-c431-4ca3-bff6-7d09334ac6fe}</Project>
-    </ProjectReference>
     <ProjectReference Include="..\core\util\util-metro.vcxproj">
       <Project>{eff8144d-f91e-4bbd-b09b-d6db6b3a5512}</Project>
       <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>

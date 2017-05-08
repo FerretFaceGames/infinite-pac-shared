@@ -616,8 +616,6 @@ void PacApplication::SetState(EAppState state)
 					{
 						_game = pGame;
 					}
-
-					ReportStartingGame();
 				}
 			}
 
@@ -644,22 +642,6 @@ void PacApplication::SetState(EAppState state)
 	}
 
 	assert(_state == state);
-}
-
-void PacApplication::ReportStartingGame()
-{
-	noAssertRet(_game && _game->GetMazes() && Maze::App::TelemetryClient);
-
-	std::map<std::wstring, std::wstring> props;
-	props[L"MazesId"] = _game->GetMazes()->GetID().c_str();
-
-	for (ff::String key : _options.GetAllNames())
-	{
-		props[key.c_str()] = _options.GetString(key).c_str();
-	}
-
-	Maze::App::TelemetryClient->TrackEvent(L"Starting Game", props);
-	Maze::App::TelemetryClient->Flush();
 }
 
 IPlayingActor *PacApplication::GetCurrentPac() const

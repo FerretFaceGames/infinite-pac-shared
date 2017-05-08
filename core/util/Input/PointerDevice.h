@@ -18,7 +18,6 @@ namespace ff
 		TouchType type;
 		PointDouble startPos;
 		PointDouble pos;
-		size_t frames;
 		unsigned int id;
 	};
 

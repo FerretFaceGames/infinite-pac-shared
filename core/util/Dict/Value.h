@@ -132,7 +132,7 @@ namespace ff
 		RectInt &InternalGetRect() const;
 		PointFloat &InternalGetPointF() const;
 		RectFloat &InternalGetRectF() const;
-		String &InternalGetString() const;
+		StringOut InternalGetString() const;
 
 		union
 		{

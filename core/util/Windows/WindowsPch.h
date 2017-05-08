@@ -8,6 +8,7 @@
 // Plain normal windows stuff
 #include <Windows.h>
 #include <WindowsX.h>
+#include <winerror.h>
 #include <TChar.h>
 #include <CommCtrl.h>
 #include <OleCtl.h>

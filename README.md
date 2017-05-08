@@ -7,9 +7,9 @@ This repo contains the full source code for building the game *Infinite Pac Shar
 This is meant to be an example for using the *ffcore* library for writing a game. The *ffcore* code is part of this repo in the core directory, but that's just for simplicity and stability. The live source code for *ffcore* is always here: https://github.com/FerretFaceGames/ffcore
 
 ## Starting point
-Open the solution game.sln in Visual Studio 2015.
+Open the solution game.sln in Visual Studio 2017.
 
 The file App.xaml.cpp in the Maze project is where game initialization starts. The file Main.cpp in the Maze project is where the main() function is, but really game init starts in App.xaml.cpp since Main.cpp is just minimal stuff to get into the App class.
 
 ## Copyright
-Copyright 2016 Peter Spada
+Copyright 2017 Peter Spada

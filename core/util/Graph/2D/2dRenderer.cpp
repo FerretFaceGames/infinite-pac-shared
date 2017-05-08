@@ -20,6 +20,11 @@ static const size_t MULTI_SPRITE_CHUNK_SIZE = 1024;
 static const float SPRITE_DEPTH_DELTA = 1.0f / 2048.0f;
 static const float MAX_SPRITE_DEPTH = MAX_DEFER_SPRITES * SPRITE_DEPTH_DELTA;
 
+inline static bool HasAlpha(const DirectX::XMFLOAT4 &color)
+{
+	return color.w != 1 && color.w != 0;
+}
+
 // Keeps track of all the textures used when drawing a multi-sprite.
 // There can be dupes in this list since sprites don't have to use unique textures.
 typedef ff::Vector<ff::IGraphTexture *, MAX_MULTI_SPRITE_TEXTURES> MultiSpriteTextures;
@@ -158,7 +163,7 @@ private:
 	ff::ComPtr<ff::IGraphDevice> _device;
 	ff::Vector<DirectX::XMFLOAT4X4> _matrixStack[ff::MATRIX_COUNT];
 	ff::Vector<ff::ComPtr<ff::I2dEffect>> _effectStack;
-	ff::List<RenderState> _renderStateStack;
+	std::stack<RenderState> _renderStateStack;
 	RenderState *_renderState;
 	ff::RectFloat _renderWorldRect;
 	float _spriteDepth;
@@ -473,11 +478,11 @@ void Renderer2d::PopRenderState(bool resetDepth)
 		_spriteDepth = _renderState->_oldSpriteDepth;
 	}
 
-	_renderStateStack.DeleteLast();
+	_renderStateStack.pop();
 
-	if (_renderStateStack.Size())
+	if (!_renderStateStack.empty())
 	{
-		_renderState = _renderStateStack.GetLast();
+		_renderState = &_renderStateStack.top();
 		BeginRender(_renderState);
 	}
 	else
@@ -506,7 +511,8 @@ bool Renderer2d::BeginRender(
 
 	// Create new render state
 	{
-		_renderState = &_renderStateStack.Insert();
+		_renderStateStack.push(RenderState());
+		_renderState = &_renderStateStack.top();
 		_renderState->_target = target;
 		_renderState->_depth = depth;
 		_renderState->_oldSpriteDepth = _spriteDepth;
@@ -814,7 +820,7 @@ void Renderer2d::DrawSprite(
 	ff::SpriteVertex sv;
 	sv.color = color ? *color : ff::GetColorWhite();
 
-	bool hasAlpha = (data._type == ff::SpriteType::Transparent) || sv.color.w != 1;
+	bool hasAlpha = (data._type == ff::SpriteType::Transparent) || ::HasAlpha(sv.color);
 	TextureBucket *bucket = GetTextureBucket(data._texture, textureIndex);
 	ff::SpriteVertexes *spriteArray = (hasAlpha && !_forceOpaque) ? bucket->_alphaSprites : bucket->_opaqueSprites;
 	size_t firstSprite = spriteArray->Size();
@@ -903,10 +909,10 @@ void Renderer2d::DrawMultiSprite(
 	if (!hasAlpha)
 	{
 		hasAlpha =
-			colors[0].w != 1 ||
-			colors[1].w != 1 ||
-			colors[2].w != 1 ||
-			colors[3].w != 1;
+			::HasAlpha(colors[0]) ||
+			::HasAlpha(colors[1]) ||
+			::HasAlpha(colors[2]) ||
+			::HasAlpha(colors[3]);
 	}
 
 	// Get the texture for each sprite data
@@ -1021,7 +1027,7 @@ void Renderer2d::DrawLine(const ff::PointFloat *pStart, const ff::PointFloat *pE
 	lv.color = color ? *color : ff::GetColorWhite();
 	lv.pos.z = _spriteDepth;
 
-	ff::LineArtVertexes &vertexes = (lv.color.w != 1 && !_forceOpaque) ? _alphaLines : _opaqueLines;
+	ff::LineArtVertexes &vertexes = (::HasAlpha(lv.color) && !_forceOpaque) ? _alphaLines : _opaqueLines;
 
 	lv.pos.x = pStart->x;
 	lv.pos.y = -pStart->y;
@@ -1132,10 +1138,10 @@ void Renderer2d::DrawFilledRectangle(const ff::RectFloat *rect, const DirectX::X
 	}
 
 	bool hasAlpha =
-		colors[0].w != 1 ||
-		colors[1].w != 1 ||
-		colors[2].w != 1 ||
-		colors[3].w != 1;
+		::HasAlpha(colors[0]) ||
+		::HasAlpha(colors[1]) ||
+		::HasAlpha(colors[2]) ||
+		::HasAlpha(colors[3]);
 
 	ff::LineArtVertexes &vertexes = (hasAlpha && !_forceOpaque) ? _alphaTriangles : _opaqueTriangles;
 	ff::LineArtVertex lv;
@@ -1196,9 +1202,9 @@ void Renderer2d::DrawFilledTriangle(const ff::PointFloat *points, const DirectX:
 	}
 
 	bool hasAlpha =
-		colors[0].w != 1 ||
-		colors[1].w != 1 ||
-		colors[2].w != 1;
+		::HasAlpha(colors[0]) ||
+		::HasAlpha(colors[1]) ||
+		::HasAlpha(colors[2]);
 
 	ff::LineArtVertexes &vertexes = (hasAlpha && !_forceOpaque) ? _alphaTriangles : _opaqueTriangles;
 	ff::LineArtVertex lv;

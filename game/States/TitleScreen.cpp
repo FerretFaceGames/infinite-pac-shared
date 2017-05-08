@@ -388,6 +388,10 @@ void TitleScreen::Advance()
 		_render->Advance(true, false, false, this);
 	}
 
+	int nChangeOption = 0;
+	bool bExecute = false;
+	bool bLeft = false;
+
 	if (inputMap)
 	{
 		if (!_done)
@@ -398,41 +402,37 @@ void TitleScreen::Advance()
 		{
 			inputMap->ClearEvents();
 		}
-	}
 
-	int nChangeOption = 0;
-	bool bExecute = false;
-	bool bLeft = false;
-
-	for (const ff::InputEvent &ie : inputMap->GetEvents())
-	{
-		if (ie.IsStart())
+		for (const ff::InputEvent &ie : inputMap->GetEvents())
 		{
-			if (ie._eventID == GetEventUp())
+			if (ie.IsStart())
 			{
-				nChangeOption = -1;
-			}
-			else if (ie._eventID == GetEventDown())
-			{
-				nChangeOption = 1;
-			}
-			else if (ie._eventID == GetEventLeft() || ie._eventID == GetEventRight())
-			{
-				switch (_options[_curOption]._type)
+				if (ie._eventID == GetEventUp())
 				{
-				case OPT_PLAYERS:
-				case OPT_DIFF:
-				case OPT_SOUND:
-				case OPT_FULL_SCREEN:
-					bExecute = true;
-					bLeft = (ie._eventID == GetEventLeft());
+					nChangeOption = -1;
+				}
+				else if (ie._eventID == GetEventDown())
+				{
+					nChangeOption = 1;
+				}
+				else if (ie._eventID == GetEventLeft() || ie._eventID == GetEventRight())
+				{
+					switch (_options[_curOption]._type)
+					{
+					case OPT_PLAYERS:
+					case OPT_DIFF:
+					case OPT_SOUND:
+					case OPT_FULL_SCREEN:
+						bExecute = true;
+						bLeft = (ie._eventID == GetEventLeft());
+						break;
+					}
 					break;
 				}
-				break;
-			}
-			else if (ie._eventID == GetEventAction() || ie._eventID == GetEventStart())
-			{
-				bExecute = true;
+				else if (ie._eventID == GetEventAction() || ie._eventID == GetEventStart())
+				{
+					bExecute = true;
+				}
 			}
 		}
 	}

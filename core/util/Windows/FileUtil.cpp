@@ -37,7 +37,7 @@ static void SettingTempPath()
 }
 
 // helper function for paths that come from Windows
-static ff::String &StripSuperLongPrefix(ff::String &szPath)
+static ff::StringOut StripSuperLongPrefix(ff::StringOut szPath)
 {
 	if (!wcsncmp(szPath.c_str(), L"\\\\?\\", 4))
 	{
@@ -1200,7 +1200,7 @@ bool ff::ReadWholeFile(StringRef path, IData **ppData)
 	return true;
 }
 
-bool ff::ReadWholeFile(StringRef path, String &szOut)
+bool ff::ReadWholeFile(StringRef path, StringOut szOut)
 {
 	szOut.clear();
 

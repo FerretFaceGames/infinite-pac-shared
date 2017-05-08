@@ -9,6 +9,7 @@ namespace ff
 	{
 	public:
 		virtual IDXGIFactoryX *GetDXGI() = 0;
+		virtual ID2D1FactoryX *GetFactory2d() = 0;
 
 		virtual bool CreateDevice(IDXGIAdapterX *pCard, IGraphDevice **device) = 0;
 		virtual bool CreateSoftwareDevice(IGraphDevice **device) = 0;

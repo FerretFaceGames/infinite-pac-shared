@@ -22,6 +22,7 @@ public:
 	virtual void SetResources(const ff::Dict &dict) override;
 	virtual ff::Dict GetResources() const override;
 	virtual void Clear() override;
+	virtual bool IsLoading() const override;
 
 	virtual ff::SharedResourceValue GetResource(ff::StringRef name) override;
 	virtual ff::SharedResourceValue FlushResource(ff::SharedResourceValue value) override;
@@ -55,6 +56,7 @@ private:
 	ff::Dict _dict;
 	ff::Map<ff::String, ValueInfoPtr> _values;
 	ff::AppGlobals *_context;
+	long _loadingCount;
 };
 
 BEGIN_INTERFACES(Resources)
@@ -81,6 +83,7 @@ bool ff::CreateResources(AppGlobals *context, const Dict &dict, ff::IResources *
 }
 
 Resources::Resources()
+	: _loadingCount(0)
 {
 }
 
@@ -135,6 +138,11 @@ void Resources::Clear()
 
 	_values.Clear();
 	_dict.Clear();
+}
+
+bool Resources::IsLoading() const
+{
+	return ff::InterlockedAccess(_loadingCount) != 0;
 }
 
 ff::SharedResourceValue Resources::GetResource(ff::StringRef name)
@@ -242,12 +250,15 @@ ff::SharedResourceValue Resources::StartLoading(ff::StringRef name)
 	assertRetVal(dictValue && !dictValue->IsType(ff::Value::Type::Null), value);
 
 	info._event = ff::CreateEvent();
+	::InterlockedIncrement(&_loadingCount);
 
 	ff::ComPtr<Resources, IResources> keepAlive = this;
 	ff::String keepName = name;
+
 	ff::GetThreadPool()->Add([=]()
 	{
 		keepAlive->DoLoad(infoPtr, keepName, dictValue);
+		::InterlockedDecrement(&keepAlive->_loadingCount);
 	});
 
 	return value;

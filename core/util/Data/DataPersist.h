@@ -26,8 +26,8 @@ namespace ff
 	}
 
 	template<>
-	UTIL_API bool SaveData<String>(IDataWriter *pWriter, const String &data);
+	UTIL_API bool SaveData<String>(IDataWriter *pWriter, StringRef data);
 
 	template<>
-	UTIL_API bool LoadData<String>(IDataReader *pReader, String &data);
+	UTIL_API bool LoadData<String>(IDataReader *pReader, StringOut data);
 }

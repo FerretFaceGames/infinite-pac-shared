@@ -542,7 +542,7 @@ static bool InternalSaveDict(const ff::Dict &dict, bool chain, bool nameHashOnly
 	assertRetVal(ff::SaveData(writer, version), false);
 	assertRetVal(ff::SaveData(writer, count), false);
 
-	for (const ff::String &name: names)
+	for (ff::StringRef name: names)
 	{
 		if (nameHashOnly)
 		{

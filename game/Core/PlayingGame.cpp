@@ -51,9 +51,6 @@ private:
 	void OnPacDied();
 	void CheckFreeLife();
 
-	void ReportStartingLevel();
-	void ReportGameOver();
-
 	bool _isGameOver;
 	Stats _stats;
 	size_t _level;
@@ -190,8 +187,6 @@ void Player::SetLevel(size_t nLevel)
 
 	_playMaze = pPlayMaze;
 	_sounds = pSounds;
-
-	ReportStartingLevel();
 }
 
 IPlayingMaze *Player::GetPlayingMaze()
@@ -250,8 +245,6 @@ void Player::OnPacDied()
 	else
 	{
 		_isGameOver = true;
-
-		ReportGameOver();
 	}
 }
 
@@ -304,36 +297,6 @@ void Player::CheckFreeLife()
 		_lives = 1;
 	}
 #endif
-}
-
-void Player::ReportStartingLevel()
-{
-	noAssertRet(Maze::App::TelemetryClient);
-
-	std::map<std::wstring, std::wstring> props;
-	props[L"MazesId"] = _mazes->GetID().c_str();
-	props[L"Player"] = std::to_wstring(GetMazePlayer());
-	props[L"Score"] = std::to_wstring(GetScore());
-	props[L"Level"] = std::to_wstring(GetLevel());
-	props[L"Lives"] = std::to_wstring(GetLives());
-
-	Maze::App::TelemetryClient->TrackEvent(L"Starting Level", props);
-	Maze::App::TelemetryClient->Flush();
-}
-
-void Player::ReportGameOver()
-{
-	noAssertRet(Maze::App::TelemetryClient);
-
-	std::map<std::wstring, std::wstring> props;
-	props[L"MazesId"] = _mazes->GetID().c_str();
-	props[L"Player"] = std::to_wstring(GetMazePlayer());
-	props[L"Score"] = std::to_wstring(GetScore());
-	props[L"Level"] = std::to_wstring(GetLevel());
-	props[L"Lives"] = std::to_wstring(GetLives());
-
-	Maze::App::TelemetryClient->TrackEvent(L"Game Over", props);
-	Maze::App::TelemetryClient->Flush();
 }
 
 // IPlayingMazeHost

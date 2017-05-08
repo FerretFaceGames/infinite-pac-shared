@@ -1,6 +1,8 @@
-#include <afxres.h>
+#include <windows.h>
 #include "Resource/util-resource.h"
 #pragma code_page(1252)
+
+#define IDC_STATIC -1
 
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 

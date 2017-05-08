@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "COM/ComAlloc.h"
+#include "Globals/MetroGlobals.h"
 #include "Graph/Data/GraphCategory.h"
 #include "Graph/GraphDevice.h"
 #include "Graph/GraphFactory.h"
@@ -30,6 +31,7 @@ public:
 	virtual ff::PointInt GetBufferSize() const override;
 	virtual ff::PointInt GetRotatedSize() const override;
 	virtual int GetRotatedDegrees() const override;
+	virtual double GetDpiScale() const override;
 	virtual void Clear(const DirectX::XMFLOAT4 *pColor = nullptr) override;
 	virtual ID3D11Texture2D *GetTexture() override;
 	virtual ID3D11RenderTargetView *GetTarget() override;
@@ -41,7 +43,7 @@ public:
 	virtual bool WaitForVsync() const override;
 
 	virtual bool CanSetFullScreen() const override;
-	virtual bool IsFullScreen() const override;
+	virtual bool IsFullScreen() override;
 	virtual bool SetFullScreen(bool fullScreen) override;
 
 	virtual bool UpdateSwapChain(
@@ -67,6 +69,8 @@ private:
 	ff::PointInt _windowSize;
 	ff::PointInt _panelSize;
 	ff::PointDouble _panelScale;
+	bool _cachedFullScreenMode;
+	bool _fullScreenMode;
 };
 
 BEGIN_INTERFACES(RenderTargetWindowMetro)
@@ -105,6 +109,8 @@ RenderTargetWindowMetro::RenderTargetWindowMetro()
 	: _windowSize(0, 0)
 	, _panelSize(0, 0)
 	, _panelScale(1, 1)
+	, _cachedFullScreenMode(false)
+	, _fullScreenMode(false)
 	, _nativeOrientation(Windows::Graphics::Display::DisplayOrientations::None)
 	, _currentOrientation(Windows::Graphics::Display::DisplayOrientations::None)
 {
@@ -127,6 +133,7 @@ bool RenderTargetWindowMetro::Init(Windows::UI::Xaml::Window ^window)
 	_window = window;
 	_displayInfo = Windows::Graphics::Display::DisplayInformation::GetForCurrentView();
 	_view = Windows::UI::ViewManagement::ApplicationView::GetForCurrentView();
+
 	auto windowContent = dynamic_cast<Windows::UI::Xaml::Controls::UserControl ^>(_window->Content);
 	assertRetVal(windowContent, false);
 
@@ -232,6 +239,8 @@ bool RenderTargetWindowMetro::UpdateSwapChain(
 	_panelScale = panelCompositionScale;
 	_nativeOrientation = nativeOrientation;
 	_currentOrientation = currentOrientation;
+	_cachedFullScreenMode = false;
+	_fullScreenMode = false;
 
 	bool swapDimensions =
 		displayRotation == DXGI_MODE_ROTATION_ROTATE90 ||
@@ -275,7 +284,7 @@ bool RenderTargetWindowMetro::UpdateSwapChain(
 		assertRetVal(ff::GetParentDXGI(_device->GetAdapter(), __uuidof(IDXGIFactoryX), (void**)&cardDxgi), false);
 
 		ff::ComPtr<IDXGISwapChain1> swapChain;
-		assertHrRetVal(cardDxgi->CreateSwapChainForComposition(_device->GetDX(), &desc, nullptr, &swapChain), false);
+		assertHrRetVal(cardDxgi->CreateSwapChainForComposition(_device->Get3d(), &desc, nullptr, &swapChain), false);
 		assertRetVal(_swapChain.QueryFrom(swapChain), false);
 		Windows::UI::Xaml::Controls::SwapChainPanel ^panel = _panel;
 
@@ -360,6 +369,11 @@ int RenderTargetWindowMetro::GetRotatedDegrees() const
 	return 0;
 }
 
+double RenderTargetWindowMetro::GetDpiScale() const
+{
+	return ff::MetroGlobals::Get()->GetDpiScale();
+}
+
 void RenderTargetWindowMetro::Clear(const DirectX::XMFLOAT4 *pColor)
 {
 	assertRet(_target);
@@ -414,9 +428,15 @@ bool RenderTargetWindowMetro::CanSetFullScreen() const
 	return true;
 }
 
-bool RenderTargetWindowMetro::IsFullScreen() const
+bool RenderTargetWindowMetro::IsFullScreen()
 {
-	return _view->IsFullScreenMode;
+	if (!_cachedFullScreenMode)
+	{
+		_fullScreenMode = _view->IsFullScreenMode;
+		_cachedFullScreenMode = true;
+	}
+
+	return _fullScreenMode;
 }
 
 bool RenderTargetWindowMetro::SetFullScreen(bool fullScreen)

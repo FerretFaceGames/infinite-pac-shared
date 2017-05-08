@@ -37,6 +37,6 @@ namespace ff
 	private:
 		Mutex _cs;
 		bool _console;
-		Vector<ComPtr<IDataWriter>> _writers;
+		std::vector<ComPtr<IDataWriter>> _writers;
 	};
 }

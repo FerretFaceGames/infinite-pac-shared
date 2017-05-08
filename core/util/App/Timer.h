@@ -7,6 +7,7 @@ namespace ff
 		UTIL_API GlobalTime();
 
 		size_t _advanceCount;
+		size_t _renderCount;
 		double _absoluteSeconds;
 		double _advancesPerSecond;
 		double _secondsPerAdvance;
@@ -15,7 +16,7 @@ namespace ff
 	};
 
 	struct FrameTime
-	{ 
+	{
 		UTIL_API FrameTime();
 
 		static const size_t MAX_ADVANCE_COUNT = 4;

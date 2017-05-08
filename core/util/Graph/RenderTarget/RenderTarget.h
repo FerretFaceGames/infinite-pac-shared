@@ -14,6 +14,7 @@ namespace ff
 		virtual PointInt GetBufferSize() const = 0;
 		virtual PointInt GetRotatedSize() const = 0;
 		virtual int GetRotatedDegrees() const = 0;
+		virtual double GetDpiScale() const = 0;
 		virtual void Clear(const DirectX::XMFLOAT4 *pColor = nullptr) = 0;
 
 		virtual ID3D11Texture2D *GetTexture() = 0;
@@ -31,7 +32,7 @@ namespace ff
 		virtual bool WaitForVsync() const = 0;
 
 		virtual bool CanSetFullScreen() const = 0;
-		virtual bool IsFullScreen() const = 0;
+		virtual bool IsFullScreen() = 0;
 		virtual bool SetFullScreen(bool fullScreen) = 0;
 
 #if METRO_APP

@@ -138,7 +138,7 @@ void ff::Dict::Add(const Dict &rhs, bool chain)
 {
 	Vector<String> names = rhs.GetAllNames(chain);
 
-	for (const String &name: names)
+	for (StringRef name: names)
 	{
 		Value *value = rhs.GetValue(name, chain);
 		SetValue(name, value);
@@ -149,7 +149,7 @@ void ff::Dict::Merge(const Dict &rhs, bool chain)
 {
 	Vector<String> names = rhs.GetAllNames(chain);
 
-	for (const String &name: names)
+	for (StringRef name: names)
 	{
 		Value *value = rhs.GetValue(name, chain);
 		ff::ValuePtr newValue;
@@ -730,7 +730,7 @@ ff::Vector<ff::String> ff::Dict::GetAllNames(bool chain, bool sorted, bool nameH
 	InternalGetAllNames(nameSet, chain, nameHashOnly);
 
 	Vector<String> names;
-	for (const String &name: nameSet)
+	for (StringRef name: nameSet)
 	{
 		names.Push(name);
 	}

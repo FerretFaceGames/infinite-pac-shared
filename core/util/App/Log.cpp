@@ -46,8 +46,8 @@ bool ff::Log::AddWriter(IDataWriter *pWriter)
 {
 	LockMutex crit(_cs);
 
-	assertRetVal(_writers.Find(pWriter) == INVALID_SIZE, false);
-	_writers.Push(pWriter);
+	assertRetVal(std::find(_writers.begin(), _writers.end(), pWriter) == _writers.end(), false);
+	_writers.push_back(pWriter);
 
 	return true;
 }
@@ -58,10 +58,9 @@ bool ff::Log::RemoveWriter(IDataWriter *writer)
 
 	assertRetVal(writer, false);
 
-	size_t i = _writers.Find(writer);
-	assertRetVal(i != INVALID_SIZE, false);
-
-	_writers.Delete(i);
+	auto i = std::find(_writers.begin(), _writers.end(), writer);
+	assertRetVal(i != _writers.end(), false);
+	_writers.erase(i);
 
 	return true;
 }
@@ -70,18 +69,18 @@ void ff::Log::RemoveAllWriters()
 {
 	LockMutex crit(_cs);
 
-	_writers.Clear();
+	_writers.clear();
 }
 
 void ff::Log::Trace(const wchar_t *szText)
 {
 	assertRet(szText);
 
-	if (!_writers.IsEmpty())
+	if (!_writers.empty())
 	{
 		LockMutex crit(_cs);
 
-		if (!_writers.IsEmpty())
+		if (!_writers.empty())
 		{
 			DWORD nBytes = (DWORD)(wcslen(szText) * sizeof(wchar_t));
 

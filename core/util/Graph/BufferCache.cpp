@@ -27,7 +27,7 @@ void ff::BufferCache::Reset()
 {
 	for (size_t i = 0; i < _countof(_buffers); i++)
 	{
-		_buffers[i].Clear();
+		_buffers[i].clear();
 	}
 
 	ZeroObject(_allocated);
@@ -95,7 +95,7 @@ static size_t GetBufferSize(ID3D11Buffer *pBuffer)
 
 bool ff::BufferCache::CreateBuffer(size_t nBytes, ID3D11Buffer **ppBuffer)
 {
-	assertRetVal(nBytes && ppBuffer && _device && _device->GetDX(), false);
+	assertRetVal(nBytes && ppBuffer && _device && _device->Get3d(), false);
 
 	D3D11_BUFFER_DESC desc;
 	ZeroObject(desc);
@@ -105,7 +105,7 @@ bool ff::BufferCache::CreateBuffer(size_t nBytes, ID3D11Buffer **ppBuffer)
 	desc.BindFlags      = _binding;
 	desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 
-	assertHrRetVal(_device->GetDX()->CreateBuffer(&desc, nullptr, ppBuffer), false);
+	assertHrRetVal(_device->Get3d()->CreateBuffer(&desc, nullptr, ppBuffer), false);
 	assertRetVal(*ppBuffer, false);
 
 	return true;
@@ -126,7 +126,7 @@ bool ff::BufferCache::CreateStaticBuffer(const void *pData, size_t nBytes, ID3D1
 	ZeroObject(data);
 	data.pSysMem = pData;
 
-	assertHrRetVal(_device->GetDX()->CreateBuffer(&desc, &data, ppBuffer), false);
+	assertHrRetVal(_device->Get3d()->CreateBuffer(&desc, &data, ppBuffer), false);
 	assertRetVal(*ppBuffer, false);
 
 	return true;
@@ -144,22 +144,21 @@ void ff::BufferCache::ReturnBuffer(ID3D11Buffer *pBuffer)
 	size_t nBytes  = GetBufferSize(pBuffer);
 	size_t nBuffer = GetBufferIndex(nBytes);
 
-	_buffers[nBuffer].Insert(pBuffer);
+	_buffers[nBuffer].push_back(pBuffer);
 }
 
 bool ff::BufferCache::BorrowAndMapBuffer(size_t nBytes, ID3D11Buffer **ppBuffer, void **ppMapped)
 {
 	assertRetVal(ppBuffer, false);
 
-	size_t nBuffer        = GetBufferIndex(nBytes);
+	size_t nBuffer = GetBufferIndex(nBytes);
 	size_t nLargestBuffer = _countof(_buffers) - 1;
 
 	// Try to reuse a cached buffer
 
-	for (ComPtr<ID3D11Buffer> *pCur = _buffers[nBuffer].GetFirst();
-		pCur; pCur = _buffers[nBuffer].GetNext(*pCur))
+	for (auto i = _buffers[nBuffer].begin(); i != _buffers[nBuffer].end(); i++)
 	{
-		size_t nCurSize = GetBufferSize(*pCur);
+		size_t nCurSize = GetBufferSize(*i);
 
 		if (nCurSize >= nBytes)
 		{
@@ -168,12 +167,12 @@ bool ff::BufferCache::BorrowAndMapBuffer(size_t nBytes, ID3D11Buffer **ppBuffer,
 				// Try to lock the buffer
 
 				D3D11_MAPPED_SUBRESOURCE map;
-				assertHrRetVal(_device->GetContext()->Map(*pCur, 0, D3D11_MAP_WRITE_DISCARD, 0, &map), false);
+				assertHrRetVal(_device->GetContext()->Map(*i, 0, D3D11_MAP_WRITE_DISCARD, 0, &map), false);
 				*ppMapped = map.pData;
 			}
 
-			*ppBuffer = ff::GetAddRef<ID3D11Buffer>(*pCur);
-			_buffers[nBuffer].Delete(*pCur);
+			*ppBuffer = ff::GetAddRef<ID3D11Buffer>(*i);
+			_buffers[nBuffer].erase(i);
 
 			return true;
 		}
@@ -184,18 +183,17 @@ bool ff::BufferCache::BorrowAndMapBuffer(size_t nBytes, ID3D11Buffer **ppBuffer,
 
 	if (nBuffer == nLargestBuffer &&
 		_allocated[nLargestBuffer] >= GetMaxBufferCount() &&
-		_buffers[nLargestBuffer].Size())
+		!_buffers[nLargestBuffer].empty())
 	{
 		// Throw away one of the "large" buffers, it isn't large enough
 
-		for (ComPtr<ID3D11Buffer> *pCur = _buffers[nLargestBuffer].GetFirst();
-			pCur; pCur = _buffers[nLargestBuffer].GetNext(*pCur))
+		for (auto i = _buffers[nLargestBuffer].begin(); i != _buffers[nLargestBuffer].end(); i++)
 		{
-			size_t nCurSize = GetBufferSize(*pCur);
+			size_t nCurSize = GetBufferSize(*i);
 
 			if (nCurSize < nBytes)
 			{
-				_buffers[nLargestBuffer].Delete(*pCur);
+				_buffers[nLargestBuffer].erase(i);
 				_allocated[nLargestBuffer]--;
 
 				break;
@@ -211,7 +209,7 @@ bool ff::BufferCache::BorrowAndMapBuffer(size_t nBytes, ID3D11Buffer **ppBuffer,
 		{
 			ComPtr<ID3D11Buffer> pBuffer;
 			assertRetVal(CreateBuffer(GetAllocationSize(nBytes), &pBuffer), false);
-			_buffers[nBuffer].Insert(pBuffer);
+			_buffers[nBuffer].push_back(pBuffer);
 			_allocated[nBuffer]++;
 		}
 	}

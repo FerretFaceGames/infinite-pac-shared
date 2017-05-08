@@ -438,7 +438,7 @@ static bool ConvertOptimizedTextures(
 		finalTextures.Push(newTexture);
 
 		DirectX::ScratchImage scratch;
-		assertHrRetVal(DirectX::CaptureTexture(device->GetDX(), device->GetContext(), texture->GetTexture(), scratch), false);
+		assertHrRetVal(DirectX::CaptureTexture(device->Get3d(), device->GetContext(), texture->GetTexture(), scratch), false);
 
 		std::shared_ptr<DirectX::ScratchImage> alphaScratch = std::make_shared<DirectX::ScratchImage>();
 		assertHrRetVal(DirectX::Convert(scratch.GetImages(), 1, scratch.GetMetadata(), DXGI_FORMAT_A8_UNORM, DirectX::TEX_FILTER_DEFAULT, 0, *alphaScratch), false);

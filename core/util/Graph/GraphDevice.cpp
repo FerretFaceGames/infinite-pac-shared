@@ -34,7 +34,8 @@ namespace ff
 		virtual bool ResetIfNeeded() override;
 		virtual bool IsSoftware() const override;
 
-		virtual ID3D11DeviceX *GetDX() override;
+		virtual ID3D11DeviceX *Get3d() override;
+		virtual ID2D1DeviceX *Get2d() override;
 		virtual IDXGIDeviceX *GetDXGI() override;
 		virtual ID3D11DeviceContextX *GetContext() override;
 		virtual IDXGIAdapterX *GetAdapter() override;
@@ -48,6 +49,7 @@ namespace ff
 
 	private:
 		ComPtr<ID3D11DeviceX> _device;
+		ComPtr<ID2D1DeviceX> _device2d;
 		ComPtr<ID3D11DeviceContextX> _context;
 		ComPtr<IDXGIAdapterX> _adapter;
 		ComPtr<IDXGIFactoryX> _factory;
@@ -152,7 +154,8 @@ static bool InternalCreateDevice(
 		? D3D_DRIVER_TYPE_UNKNOWN
 		: (bSoftware ? D3D_DRIVER_TYPE_WARP : D3D_DRIVER_TYPE_HARDWARE);
 
-	UINT nFlags = ff::GetThisModule().IsDebugBuild() ? D3D11_CREATE_DEVICE_DEBUG : 0;
+	UINT nFlags = D3D11_CREATE_DEVICE_BGRA_SUPPORT |
+		(ff::GetThisModule().IsDebugBuild() ? D3D11_CREATE_DEVICE_DEBUG : 0);
 
 	const D3D_FEATURE_LEVEL featureLevels[] =
 	{
@@ -164,9 +167,9 @@ static bool InternalCreateDevice(
 		D3D_FEATURE_LEVEL_10_0,
 	};
 
-	ff::ComPtr<ID3D11Device>         pDevice;
-	ff::ComPtr<ID3D11DeviceX>        pDeviceX;
-	ff::ComPtr<ID3D11DeviceContext>  pContext;
+	ff::ComPtr<ID3D11Device> pDevice;
+	ff::ComPtr<ID3D11DeviceX> pDeviceX;
+	ff::ComPtr<ID3D11DeviceContext> pContext;
 	ff::ComPtr<ID3D11DeviceContextX> pContextX;
 
 	assertHrRetVal(D3D11CreateDevice(
@@ -196,6 +199,12 @@ bool ff::GraphDevice::Init(IDXGIAdapterX *pCard, bool bSoftware)
 	assertRetVal(GetParentDXGI(_device, __uuidof(IDXGIAdapterX), (void**)&_adapter), false);
 	assertRetVal(GetParentDXGI(_adapter, __uuidof(IDXGIFactoryX), (void**)&_factory), false);
 	assertRetVal(_dxgiDevice.QueryFrom(_device), false);
+
+#if METRO_APP
+	ff::ComPtr<ID2D1FactoryX> factory2d = ff::ProcessGlobals::Get()->GetGraphicFactory()->GetFactory2d();
+	assertRetVal(factory2d, false);
+	assertHrRetVal(factory2d->CreateDevice(_dxgiDevice, &_device2d), false);
+#endif
 
 	return true;
 }
@@ -270,6 +279,7 @@ bool ff::GraphDevice::Reset()
 	}
 
 	_device = nullptr;
+	_device2d = nullptr;
 	_adapter = nullptr;
 	_factory = nullptr;
 	_dxgiDevice = nullptr;
@@ -331,9 +341,14 @@ bool ff::GraphDevice::IsSoftware() const
 	return _softwareDevice;
 }
 
-ID3D11DeviceX *ff::GraphDevice::GetDX()
+ID3D11DeviceX *ff::GraphDevice::Get3d()
 {
 	return _device;
+}
+
+ID2D1DeviceX *ff::GraphDevice::Get2d()
+{
+	return _device2d;
 }
 
 IDXGIDeviceX *ff::GraphDevice::GetDXGI()

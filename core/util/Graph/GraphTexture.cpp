@@ -81,7 +81,7 @@ static ff::ModuleStartup RegisterTexture([](ff::Module &module)
 	module.RegisterClassT<ff::GraphTexture>(name, __uuidof(ff::IGraphTexture), ff::GetCategoryGraphicsObject());
 });
 
-DXGI_FORMAT ff::ParseTextureFormat(const ff::String &szFormat)
+DXGI_FORMAT ff::ParseTextureFormat(ff::StringRef szFormat)
 {
 	DXGI_FORMAT format = DXGI_FORMAT_UNKNOWN;
 
@@ -193,7 +193,7 @@ bool ff::CreateGraphTexture(
 
 	ComPtr<ID3D11Resource> pResource;
 	assertHrRetVal(DirectX::CreateTexture(
-		pDevice->GetDX(),
+		pDevice->Get3d(),
 		pScratchFinal->GetImages(),
 		pScratchFinal->GetImageCount(),
 		pScratchFinal->GetMetadata(),
@@ -275,7 +275,7 @@ bool ff::CreateGraphTexture(
 	assertRetVal(scratch != nullptr, false);
 
 	ff::ComPtr<ID3D11Resource> destResource;
-	assertHrRetVal(DirectX::CreateTexture(pDevice->GetDX(), scratch->GetImages(), 1, scratch->GetMetadata(), &destResource), false);
+	assertHrRetVal(DirectX::CreateTexture(pDevice->Get3d(), scratch->GetImages(), 1, scratch->GetMetadata(), &destResource), false);
 	scratch.reset();
 
 	ComPtr<ID3D11Texture2D> destTexture;
@@ -334,7 +334,7 @@ bool ff::CreateGraphTexture(
 	desc.SampleDesc.Quality = 0;
 
 	ComPtr<ID3D11Texture2D> pTexture2D;
-	assertHrRetVal(pDevice->GetDX()->CreateTexture2D(&desc, nullptr, &pTexture2D), false);
+	assertHrRetVal(pDevice->Get3d()->CreateTexture2D(&desc, nullptr, &pTexture2D), false);
 
 	return CreateGraphTexture(pDevice, pTexture2D, ppTexture);
 }
@@ -367,7 +367,7 @@ bool ff::CreateStagingTexture(
 	desc.SampleDesc.Quality = 0;
 
 	ComPtr<ID3D11Texture2D> pTexture2D;
-	assertHrRetVal(pDevice->GetDX()->CreateTexture2D(&desc, nullptr, &pTexture2D), false);
+	assertHrRetVal(pDevice->Get3d()->CreateTexture2D(&desc, nullptr, &pTexture2D), false);
 
 	return CreateGraphTexture(pDevice, pTexture2D, ppTexture);
 }
@@ -496,7 +496,7 @@ bool ff::GraphTexture::Reset()
 
 		ComPtr<ID3D11Resource> resource;
 		assertHrRetVal(DirectX::CreateTexture(
-			_device->GetDX(),
+			_device->Get3d(),
 			scratch.GetImages(),
 			scratch.GetImageCount(),
 			scratch.GetMetadata(),
@@ -512,7 +512,7 @@ bool ff::GraphTexture::Reset()
 		_texture = nullptr;
 		_view = nullptr;
 
-		assertHrRetVal(_device->GetDX()->CreateTexture2D(&desc, nullptr, &_texture), false);
+		assertHrRetVal(_device->Get3d()->CreateTexture2D(&desc, nullptr, &_texture), false);
 	}
 
 	assertRetVal(GetShaderResource(), false);
@@ -602,7 +602,7 @@ ID3D11ShaderResourceView *ff::GraphTexture::GetShaderResource()
 			break;
 		}
 
-		assertHrRetVal(_device->GetDX()->CreateShaderResourceView(_texture, &desc, &_view), nullptr);
+		assertHrRetVal(_device->Get3d()->CreateShaderResourceView(_texture, &desc, &_view), nullptr);
 	}
 
 	return _view;
@@ -623,7 +623,7 @@ bool ff::GraphTexture::Convert(DXGI_FORMAT format, size_t nMipMapLevels, IGraphT
 	DirectX::ScratchImage *pScratchFinal = &scratchOrig;
 
 	assertHrRetVal(DirectX::CaptureTexture(
-		_device->GetDX(),
+		_device->Get3d(),
 		_device->GetContext(),
 		_texture,
 		scratchOrig), false);
@@ -719,7 +719,7 @@ bool ff::GraphTexture::Convert(DXGI_FORMAT format, size_t nMipMapLevels, IGraphT
 
 	ComPtr<ID3D11Resource> pResource;
 	assertHrRetVal(DirectX::CreateTexture(
-		_device->GetDX(),
+		_device->Get3d(),
 		pScratchFinal->GetImages(),
 		pScratchFinal->GetImageCount(),
 		pScratchFinal->GetMetadata(),
@@ -753,7 +753,7 @@ bool ff::GraphTexture::SaveResource(ff::Dict &dict)
 
 	DirectX::ScratchImage scratch;
 	assertHrRetVal(DirectX::CaptureTexture(
-		_device->GetDX(),
+		_device->Get3d(),
 		_device->GetContext(),
 		_texture,
 		scratch), false);

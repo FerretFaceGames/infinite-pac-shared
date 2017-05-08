@@ -38,7 +38,7 @@ namespace ff
 	const int VK_GAMEPAD_COUNT = VK_GAMEPAD_RIGHT_THUMBSTICK_LEFT - VK_GAMEPAD_A + 1;
 
 	// Which device is being used?
-	enum InputDevice : BYTE
+	enum InputDevice : unsigned char
 	{
 		// NOTE: These are persisted, so don't change their order/values
 
@@ -49,7 +49,7 @@ namespace ff
 	};
 
 	// What is the user touching on the device?
-	enum InputPart : BYTE
+	enum InputPart : unsigned char
 	{
 		// NOTE: These are persisted, so don't change their order/values
 
@@ -62,7 +62,7 @@ namespace ff
 		INPUT_PART_SPECIAL_BUTTON,
 	};
 
-	enum InputPartValue : BYTE
+	enum InputPartValue : unsigned char
 	{
 		// NOTE: These are persisted, so don't change their order/values
 
@@ -77,17 +77,17 @@ namespace ff
 		INPUT_VALUE_TEXT, // string typed on the keyboard
 	};
 
-	enum InputPartIndex : BYTE
+	enum InputPartIndex : unsigned char
 	{
 		// NOTE: These are persisted, so don't change their order/values
 
-		INPUT_INDEX_LEFT_STICK    = 0,
-		INPUT_INDEX_RIGHT_STICK   = 1,
+		INPUT_INDEX_LEFT_STICK = 0,
+		INPUT_INDEX_RIGHT_STICK = 1,
 
-		INPUT_INDEX_LEFT_TRIGGER  = 0,
+		INPUT_INDEX_LEFT_TRIGGER = 0,
 		INPUT_INDEX_RIGHT_TRIGGER = 1,
 
-		INPUT_INDEX_ANY_BUTTON    = 0xFF,
+		INPUT_INDEX_ANY_BUTTON = 0xFF,
 	};
 
 	// A single thing that the user can press
@@ -151,6 +151,7 @@ namespace ff
 		virtual const Vector<InputEvent> &GetEvents() const = 0;
 		virtual float GetEventProgress(hash_t eventID) const = 0; // 1=triggered once, 2=hold time hit twice, etc...
 		virtual void ClearEvents() = 0;
+		virtual bool HasStartEvent(hash_t eventID) const = 0;
 
 		// Gets immediate values
 		virtual int GetDigitalValue(hash_t valueID) const = 0;

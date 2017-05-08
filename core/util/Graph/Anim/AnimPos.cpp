@@ -17,6 +17,13 @@ __declspec(align(16)) static const float s_identityMatrix[] =
 	0, 0, 0, 1,
 };
 
+__declspec(align(16)) static const float s_identityMatrix3x3[] =
+{
+	1, 0, 0,
+	0, 1, 0,
+	0, 0, 1,
+};
+
 __declspec(align(16)) static const float s_colorWhite[] = { 1, 1, 1, 1 };
 __declspec(align(16)) static const float s_colorBlack[] = { 0, 0, 0, 1 };
 __declspec(align(16)) static const float s_colorTrans[] = { 0, 0, 0, 0 };
@@ -52,6 +59,11 @@ const DirectX::XMFLOAT4 &ff::GetColorNone()
 const DirectX::XMFLOAT4X4 &ff::GetIdentityMatrix()
 {
 	return *(DirectX::XMFLOAT4X4 *)s_identityMatrix;
+}
+
+const DirectX::XMFLOAT3X3 &ff::GetIdentityMatrix3x3()
+{
+	return *(DirectX::XMFLOAT3X3 *)s_identityMatrix3x3;
 }
 
 void ff::NormalizeWeights(float *pWeights, size_t nCount)

@@ -231,6 +231,10 @@ void HighScoreScreen::Advance()
 	_showNewLetter = (_counter % 60) < 30;
 	_counter++;
 
+	ff::PointFloat change(0, 0);
+	bool bExecute = false;
+	bool bTyped = false;
+
 	if (inputMap)
 	{
 		if (!_done)
@@ -241,39 +245,35 @@ void HighScoreScreen::Advance()
 		{
 			inputMap->ClearEvents();
 		}
-	}
 
-	ff::PointFloat change(0, 0);
-	bool bExecute = false;
-	bool bTyped = false;
-
-	for (const ff::InputEvent &ie : inputMap->GetEvents())
-	{
-		if (ie.IsStart())
+		for (const ff::InputEvent &ie : inputMap->GetEvents())
 		{
-			if (ie._eventID == GetEventUp())
+			if (ie.IsStart())
 			{
-				change.y = -1;
-			}
-			else if (ie._eventID == GetEventDown())
-			{
-				change.y = 1;
-			}
-			else if (ie._eventID == GetEventLeft())
-			{
-				change.x = -1;
-			}
-			else if (ie._eventID == GetEventRight())
-			{
-				change.x = 1;
-			}
-			else if (ie._eventID == GetEventAction())
-			{
-				bExecute = true;
-			}
-			else if (ie._eventID == GetEventCancel())
-			{
-				_done = true;
+				if (ie._eventID == GetEventUp())
+				{
+					change.y = -1;
+				}
+				else if (ie._eventID == GetEventDown())
+				{
+					change.y = 1;
+				}
+				else if (ie._eventID == GetEventLeft())
+				{
+					change.x = -1;
+				}
+				else if (ie._eventID == GetEventRight())
+				{
+					change.x = 1;
+				}
+				else if (ie._eventID == GetEventAction())
+				{
+					bExecute = true;
+				}
+				else if (ie._eventID == GetEventCancel())
+				{
+					_done = true;
+				}
 			}
 		}
 	}

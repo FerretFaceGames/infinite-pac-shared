@@ -44,6 +44,7 @@ namespace ff
 		virtual ff::PointInt GetBufferSize() const override;
 		virtual ff::PointInt GetRotatedSize() const override;
 		virtual int GetRotatedDegrees() const override;
+		virtual double GetDpiScale() const override;
 		virtual void Clear(const DirectX::XMFLOAT4 *pColor = nullptr) override;
 
 		virtual ID3D11Texture2D *GetTexture() override;
@@ -59,7 +60,7 @@ namespace ff
 		virtual bool WaitForVsync() const override;
 
 		virtual bool CanSetFullScreen() const override;
-		virtual bool IsFullScreen() const override;
+		virtual bool IsFullScreen() override;
 		virtual bool SetFullScreen(bool fullScreen) override;
 
 	private:
@@ -317,7 +318,7 @@ bool ff::RenderTargetWindow::InitSwapChain(size_t nBackBuffers, bool bFullScreen
 			DXGI_MODE_DESC closeMode;
 			ZeroObject(closeMode);
 
-			if (SUCCEEDED(pOutput->FindClosestMatchingMode(&desc.BufferDesc, &closeMode, _device->GetDX())))
+			if (SUCCEEDED(pOutput->FindClosestMatchingMode(&desc.BufferDesc, &closeMode, _device->Get3d())))
 			{
 				_format = closeMode.Format;
 			}
@@ -352,7 +353,7 @@ bool ff::RenderTargetWindow::InitSwapChain(size_t nBackBuffers, bool bFullScreen
 	}
 
 	assertRetVal(pFactory, false);
-	assertHrRetVal(pFactory->CreateSwapChain(_device->GetDX(), &desc, &_swapChain), false);
+	assertHrRetVal(pFactory->CreateSwapChain(_device->Get3d(), &desc, &_swapChain), false);
 	assertHrRetVal(pFactory->MakeWindowAssociation(_hwnd, DXGI_MWA_NO_WINDOW_CHANGES), false);
 
 	return true;
@@ -420,6 +421,11 @@ ff::PointInt ff::RenderTargetWindow::GetRotatedSize() const
 int ff::RenderTargetWindow::GetRotatedDegrees() const
 {
 	return 0;
+}
+
+double ff::RenderTargetWindow::GetDpiScale() const
+{
+	return 1.0;
 }
 
 void ff::RenderTargetWindow::Clear(const DirectX::XMFLOAT4 *pColor)
@@ -538,7 +544,7 @@ bool ff::RenderTargetWindow::CanSetFullScreen() const
 	return !outputs.IsEmpty();
 }
 
-bool ff::RenderTargetWindow::IsFullScreen() const
+bool ff::RenderTargetWindow::IsFullScreen()
 {
 	if (_swapChain && _mainWindow)
 	{

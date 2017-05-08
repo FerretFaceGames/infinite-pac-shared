@@ -533,7 +533,6 @@ void PointerDevice::OnTouchPressed(Windows::UI::Core::PointerEventArgs ^args)
 	{
 		InternalTouchInfo newInfo;
 		newInfo.point = point;
-		newInfo.info.frames = 0;
 		UpdateTouchInfo(newInfo);
 		newInfo.info.startPos = newInfo.info.pos;
 		_pendingTouches.Push(newInfo);

@@ -30,7 +30,7 @@ ID3D11BlendState *ff::GraphStateCache::GetBlendState(const D3D11_BLEND_DESC& des
 	if (i == INVALID_ITER)
 	{
 		ComPtr<ID3D11BlendState> pState;
-		assertHrRetVal(_device->GetDX()->CreateBlendState(&desc, &pState), nullptr);
+		assertHrRetVal(_device->Get3d()->CreateBlendState(&desc, &pState), nullptr);
 
 		i = _blendStates.Insert(desc, pState);
 	}
@@ -45,7 +45,7 @@ ID3D11DepthStencilState *ff::GraphStateCache::GetDepthStencilState(const D3D11_D
 	if (i == INVALID_ITER)
 	{
 		ComPtr<ID3D11DepthStencilState> pState;
-		assertHrRetVal(_device->GetDX()->CreateDepthStencilState(&desc, &pState), nullptr);
+		assertHrRetVal(_device->Get3d()->CreateDepthStencilState(&desc, &pState), nullptr);
 
 		i = _depthStates.Insert(desc, pState);
 	}
@@ -60,7 +60,7 @@ ID3D11RasterizerState *ff::GraphStateCache::GetRasterizerState(const D3D11_RASTE
 	if (i == INVALID_ITER)
 	{
 		ComPtr<ID3D11RasterizerState> pState;
-		assertHrRetVal(_device->GetDX()->CreateRasterizerState(&desc, &pState), nullptr);
+		assertHrRetVal(_device->Get3d()->CreateRasterizerState(&desc, &pState), nullptr);
 
 		i = _rasterStates.Insert(desc, pState);
 	}
@@ -75,7 +75,7 @@ ID3D11SamplerState *ff::GraphStateCache::GetSamplerState(const D3D11_SAMPLER_DES
 	if (i == INVALID_ITER)
 	{
 		ComPtr<ID3D11SamplerState> pState;
-		assertHrRetVal(_device->GetDX()->CreateSamplerState(&desc, &pState), nullptr);
+		assertHrRetVal(_device->Get3d()->CreateSamplerState(&desc, &pState), nullptr);
 
 		i = _samplerStates.Insert(desc, pState);
 	}

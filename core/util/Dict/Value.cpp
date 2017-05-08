@@ -843,7 +843,7 @@ ff::RectFloat &ff::Value::InternalGetRectF() const
 	return *(RectFloat*)&_rectF;
 }
 
-ff::String &ff::Value::InternalGetString() const
+ff::StringOut ff::Value::InternalGetString() const
 {
 	assert(sizeof(_string) >= sizeof(String));
 	return *(String*)&_string;

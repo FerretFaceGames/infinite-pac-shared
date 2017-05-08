@@ -14,7 +14,8 @@ namespace ff
 		virtual bool ResetIfNeeded() = 0;
 		virtual bool IsSoftware() const = 0;
 
-		virtual ID3D11DeviceX *GetDX() = 0;
+		virtual ID3D11DeviceX *Get3d() = 0;
+		virtual ID2D1DeviceX *Get2d() = 0;
 		virtual IDXGIDeviceX *GetDXGI() = 0;
 		virtual ID3D11DeviceContextX *GetContext() = 0;
 		virtual IDXGIAdapterX *GetAdapter() = 0;

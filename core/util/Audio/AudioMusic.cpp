@@ -165,7 +165,7 @@ namespace ff
 		LONGLONG _desiredPosition;
 		WinHandle _asyncEvent; // set when there is no async action running
 		WinHandle _stopEvent; // set when everything should stop
-		List<BufferInfo> _bufferInfos;
+		std::list<BufferInfo> _bufferInfos;
 
 		ComPtr<IAudioDevice> _device;
 		ComPtr<IAudioStream> _stream;
@@ -822,19 +822,19 @@ void ff::AudioMusicPlaying::OnBufferStart(void *pBufferContext)
 
 	LockMutex crit(_cs);
 
-	if (_bufferInfos.Size() == MAX_BUFFERS)
+	if (_bufferInfos.size() == MAX_BUFFERS)
 	{
 		// Reuse buffers
-		assert(_bufferInfos.GetLast() == pBufferContext);
-		_bufferInfos.MoveToBack(*_bufferInfos.GetFirst());
+		assert(&_bufferInfos.back() == pBufferContext);
+		_bufferInfos.splice(_bufferInfos.end(), _bufferInfos, _bufferInfos.begin());
 	}
 
-	if (!_bufferInfos.IsEmpty())
+	if (!_bufferInfos.empty())
 	{
 		XAUDIO2_VOICE_STATE state;
 		_source->GetState(&state);
 
-		BufferInfo &info = *_bufferInfos.GetFirst();
+		BufferInfo &info = _bufferInfos.front();
 		assert(state.pCurrentBufferContext == &info);
 		info._startSamples = state.SamplesPlayed;
 	}
@@ -885,7 +885,12 @@ HRESULT ff::AudioMusicPlaying::OnReadSample(
 			SUCCEEDED(pSample->ConvertToContiguousBuffer(&mediaBuffer)) &&
 			SUCCEEDED(mediaBuffer->Lock(&data, nullptr, &dataSize)))
 		{
-			bufferInfo = (_bufferInfos.Size() < MAX_BUFFERS) ? &_bufferInfos.Insert() : _bufferInfos.GetLast();
+			if (_bufferInfos.size() < MAX_BUFFERS)
+			{
+				_bufferInfos.push_back(BufferInfo());
+			}
+
+			bufferInfo = &_bufferInfos.back();
 			bufferInfo->_buffer.Resize(dataSize);
 			bufferInfo->_startTime = llTimestamp;
 			bufferInfo->_startSamples = (UINT64)-1;

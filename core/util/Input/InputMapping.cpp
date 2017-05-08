@@ -47,6 +47,7 @@ namespace ff
 		virtual const Vector<InputEvent> &GetEvents() const override;
 		virtual float GetEventProgress(hash_t eventID) const override;
 		virtual void ClearEvents() override;
+		virtual bool HasStartEvent(hash_t eventID) const override;
 
 		virtual int GetDigitalValue(hash_t valueID) const override;
 		virtual float GetAnalogValue(hash_t valueID) const override;
@@ -231,11 +232,15 @@ void ff::InputMapping::Advance(double deltaTime)
 			int nCurTriggerCount = 0;
 			int nCurValue = GetDigitalValue(info._actions[h], &nCurTriggerCount);
 
-			nTriggerCount = h ? std::min(nTriggerCount, nCurTriggerCount) : nCurTriggerCount;
-
 			if (!nCurValue)
 			{
 				bStillHolding = false;
+				nTriggerCount = 0;
+			}
+
+			if (bStillHolding && nCurTriggerCount)
+			{
+				nTriggerCount = std::max(nTriggerCount, nCurTriggerCount);
 			}
 		}
 
@@ -465,6 +470,19 @@ float ff::InputMapping::GetEventProgress(hash_t eventID) const
 void ff::InputMapping::ClearEvents()
 {
 	_currentEvents.Clear();
+}
+
+bool ff::InputMapping::HasStartEvent(hash_t eventID) const
+{
+	for (const ff::InputEvent &event : _currentEvents)
+	{
+		if (event._eventID == eventID && event.IsStart())
+		{
+			return true;
+		}
+	}
+
+	return false;
 }
 
 int ff::InputMapping::GetDigitalValue(hash_t valueID) const

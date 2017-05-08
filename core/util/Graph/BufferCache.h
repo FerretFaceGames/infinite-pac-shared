@@ -24,7 +24,7 @@ namespace ff
 	private:
 		IGraphDevice *_device;
 		D3D11_BIND_FLAG _binding;
-		List<ComPtr<ID3D11Buffer>> _buffers[4];
+		std::vector<ComPtr<ID3D11Buffer>> _buffers[4];
 		size_t _allocated[4];
 	};
 

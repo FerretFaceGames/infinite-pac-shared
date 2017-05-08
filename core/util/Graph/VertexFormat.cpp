@@ -197,11 +197,11 @@ bool ff::CreateVertexLayout(
 	VertexType type,
 	ID3D11InputLayout **ppLayout)
 {
-	assertRetVal(pDevice && pDevice->GetDX() && ppLayout, false);
+	assertRetVal(pDevice && pDevice->Get3d() && ppLayout, false);
 	assertRetVal(pShaderBytes && nShaderSize, false);
 
 	ComPtr<ID3D11InputLayout> pLayout;
-	assertHrRetVal(pDevice->GetDX()->CreateInputLayout(
+	assertHrRetVal(pDevice->Get3d()->CreateInputLayout(
 		GetVertexDescription(type),
 		(UINT)GetVertexDescriptionCount(type),
 		pShaderBytes,

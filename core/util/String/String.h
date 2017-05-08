@@ -4,6 +4,7 @@ namespace ff
 {
 	class String;
 	typedef const String &StringRef;
+	typedef String &StringOut;
 
 	// Sometimes a function needs to return a string reference, but needs
 	// something to return for failure cases. Use this.
@@ -19,67 +20,67 @@ namespace ff
 		static const size_t npos = INVALID_SIZE;
 
 		String();
-		String(const String &rhs);
-		String(const String &rhs, size_t pos, size_t count = npos);
+		String(StringRef rhs);
+		String(StringRef rhs, size_t pos, size_t count = npos);
 		String(String &&rhs);
 		explicit String(const wchar_t *rhs, size_t count = npos);
 		String(size_t count, wchar_t ch);
 		String(const wchar_t *start, const wchar_t *end);
 		~String();
 
-		String &operator=(const String &rhs);
-		String &operator=(String &&rhs);
-		String &operator=(const wchar_t *rhs);
-		String &operator=(wchar_t ch);
+		StringOut operator=(StringRef rhs);
+		StringOut operator=(String &&rhs);
+		StringOut operator=(const wchar_t *rhs);
+		StringOut operator=(wchar_t ch);
 
-		String operator+(const String &rhs) const;
+		String operator+(StringRef rhs) const;
 		String operator+(String &&rhs) const;
 		String operator+(const wchar_t *rhs) const;
 		String operator+(wchar_t ch) const;
 
-		String &operator+=(const String &rhs);
-		String &operator+=(String &&rhs);
-		String &operator+=(const wchar_t *rhs);
-		String &operator+=(wchar_t ch);
+		StringOut operator+=(StringRef rhs);
+		StringOut operator+=(String &&rhs);
+		StringOut operator+=(const wchar_t *rhs);
+		StringOut operator+=(wchar_t ch);
 
-		bool operator==(const String &rhs) const;
+		bool operator==(StringRef rhs) const;
 		bool operator==(const wchar_t *rhs) const;
 		bool operator==(wchar_t ch) const;
 
-		bool operator!=(const String &rhs) const;
+		bool operator!=(StringRef rhs) const;
 		bool operator!=(const wchar_t *rhs) const;
 		bool operator!=(wchar_t ch) const;
 
-		bool operator<(const String &rhs) const;
+		bool operator<(StringRef rhs) const;
 		bool operator<(const wchar_t *rhs) const;
 		bool operator<(wchar_t ch) const;
 
-		bool operator<=(const String &rhs) const;
+		bool operator<=(StringRef rhs) const;
 		bool operator<=(const wchar_t *rhs) const;
 		bool operator<=(wchar_t ch) const;
 
-		bool operator>(const String &rhs) const;
+		bool operator>(StringRef rhs) const;
 		bool operator>(const wchar_t *rhs) const;
 		bool operator>(wchar_t ch) const;
 
-		bool operator>=(const String &rhs) const;
+		bool operator>=(StringRef rhs) const;
 		bool operator>=(const wchar_t *rhs) const;
 		bool operator>=(wchar_t ch) const;
 
-		String &assign(const String &rhs, size_t pos = 0, size_t count = npos);
-		String &assign(String &&rhs);
-		String &assign(const wchar_t *rhs, size_t count = npos);
-		String &assign(size_t count, wchar_t ch);
-		String &assign(const wchar_t *start, const wchar_t *end);
+		StringOut assign(StringRef rhs, size_t pos = 0, size_t count = npos);
+		StringOut assign(String &&rhs);
+		StringOut assign(const wchar_t *rhs, size_t count = npos);
+		StringOut assign(size_t count, wchar_t ch);
+		StringOut assign(const wchar_t *start, const wchar_t *end);
 
-		String &append(const String &rhs, size_t pos = 0, size_t count = npos);
-		String &append(const wchar_t *rhs, size_t count = npos);
-		String &append(size_t count, wchar_t ch);
-		String &append(const wchar_t *start, const wchar_t *end);
+		StringOut append(StringRef rhs, size_t pos = 0, size_t count = npos);
+		StringOut append(const wchar_t *rhs, size_t count = npos);
+		StringOut append(size_t count, wchar_t ch);
+		StringOut append(const wchar_t *start, const wchar_t *end);
 
-		String &insert(size_t pos, const String &rhs, size_t rhs_pos = 0, size_t count = npos);
-		String &insert(size_t pos, const wchar_t *rhs, size_t count = npos);
-		String &insert(size_t pos, size_t count, wchar_t ch);
+		StringOut insert(size_t pos, StringRef rhs, size_t rhs_pos = 0, size_t count = npos);
+		StringOut insert(size_t pos, const wchar_t *rhs, size_t count = npos);
+		StringOut insert(size_t pos, size_t count, wchar_t ch);
 		const wchar_t *insert(const wchar_t *pos, wchar_t ch);
 		const wchar_t *insert(const wchar_t *pos, const wchar_t *start, const wchar_t *end);
 		const wchar_t *insert(const wchar_t *pos, size_t count, wchar_t ch);
@@ -89,15 +90,15 @@ namespace ff
 
 		const wchar_t *erase(const wchar_t *start, const wchar_t *end);
 		const wchar_t *erase(const wchar_t *pos);
-		String &erase(size_t pos = 0, size_t count = npos);
+		StringOut erase(size_t pos = 0, size_t count = npos);
 
-		String &replace(size_t pos, size_t count, const wchar_t *rhs, size_t rhs_count = npos);
-		String &replace(size_t pos, size_t count, const String &rhs, size_t rhs_pos = 0, size_t rhs_count = npos);
-		String &replace(size_t pos, size_t count, size_t ch_count, wchar_t ch);
-		String &replace(const wchar_t *start, const wchar_t *end, const wchar_t *rhs, size_t rhs_count = npos);
-		String &replace(const wchar_t *start, const wchar_t *end, const String &rhs);
-		String &replace(const wchar_t *start, const wchar_t *end, size_t ch_count, wchar_t ch);
-		String &replace(const wchar_t *start, const wchar_t *end, const wchar_t *start2, const wchar_t *end2);
+		StringOut replace(size_t pos, size_t count, const wchar_t *rhs, size_t rhs_count = npos);
+		StringOut replace(size_t pos, size_t count, StringRef rhs, size_t rhs_pos = 0, size_t rhs_count = npos);
+		StringOut replace(size_t pos, size_t count, size_t ch_count, wchar_t ch);
+		StringOut replace(const wchar_t *start, const wchar_t *end, const wchar_t *rhs, size_t rhs_count = npos);
+		StringOut replace(const wchar_t *start, const wchar_t *end, StringRef rhs);
+		StringOut replace(const wchar_t *start, const wchar_t *end, size_t ch_count, wchar_t ch);
+		StringOut replace(const wchar_t *start, const wchar_t *end, const wchar_t *start2, const wchar_t *end2);
 
 		typedef SharedStringVectorAllocator::StringVector::iterator iterator;
 		typedef SharedStringVectorAllocator::StringVector::const_iterator const_iterator;
@@ -143,7 +144,7 @@ namespace ff
 		void shrink_to_fit();
 
 		size_t copy(wchar_t * out, size_t count, size_t pos = 0);
-		void swap(String &rhs);
+		void swap(StringOut rhs);
 		String substr(size_t pos = 0, size_t count = npos) const;
 
 		// Custom functions that aren't part of std::string
@@ -153,43 +154,43 @@ namespace ff
 		static String format_new_v(const wchar_t *format, va_list args);
 		static String from_acp(const char *str);
 		static String from_static(const wchar_t *str, size_t len = npos);
-		BSTR bstr() const;
 #if METRO_APP
 		Platform::String ^pstring() const;
 		static String from_pstring(Platform::String ^str);
 #endif
 
-		size_t find(const String &rhs, size_t pos = 0) const;
+		size_t find(StringRef rhs, size_t pos = 0) const;
 		size_t find(const wchar_t *rhs, size_t pos = 0, size_t count = npos) const;
 		size_t find(wchar_t ch, size_t pos = 0) const;
 
-		size_t rfind(const String &rhs, size_t pos = npos) const;
+		size_t rfind(StringRef rhs, size_t pos = npos) const;
 		size_t rfind(const wchar_t *rhs, size_t pos = npos, size_t count = npos) const;
 		size_t rfind(wchar_t ch, size_t pos = npos) const;
 
-		size_t find_first_of(const String &rhs, size_t pos = 0) const;
+		size_t find_first_of(StringRef rhs, size_t pos = 0) const;
 		size_t find_first_of(const wchar_t *rhs, size_t pos = 0, size_t count = npos) const;
 		size_t find_first_of(wchar_t ch, size_t pos = 0) const;
 
-		size_t find_last_of(const String &rhs, size_t pos = npos) const;
+		size_t find_last_of(StringRef rhs, size_t pos = npos) const;
 		size_t find_last_of(const wchar_t *rhs, size_t pos = npos, size_t count = npos) const;
 		size_t find_last_of(wchar_t ch, size_t pos = npos) const;
 
-		size_t find_first_not_of(const String &rhs, size_t pos = 0) const;
+		size_t find_first_not_of(StringRef rhs, size_t pos = 0) const;
 		size_t find_first_not_of(const wchar_t *rhs, size_t pos = 0, size_t count = npos) const;
 		size_t find_first_not_of(wchar_t ch, size_t pos = 0) const;
 
-		size_t find_last_not_of(const String &rhs, size_t pos = npos) const;
+		size_t find_last_not_of(StringRef rhs, size_t pos = npos) const;
 		size_t find_last_not_of(const wchar_t *rhs, size_t pos = npos, size_t count = npos) const;
 		size_t find_last_not_of(wchar_t ch, size_t pos = npos) const;
 
-		int compare(const String &rhs, size_t rhs_pos = 0, size_t rhs_count = npos) const;
-		int compare(size_t pos, size_t count, const String &rhs, size_t rhs_pos = 0, size_t rhs_count = npos) const;
+		int compare(StringRef rhs, size_t rhs_pos = 0, size_t rhs_count = npos) const;
+		int compare(size_t pos, size_t count, StringRef rhs, size_t rhs_pos = 0, size_t rhs_count = npos) const;
 		int compare(const wchar_t *rhs, size_t rhs_count = npos) const;
 		int compare(size_t pos, size_t count, const wchar_t *rhs, size_t rhs_count = npos) const;
 
 	private:
-		void make_editable();
+		SharedStringVectorAllocator::StringVector &Str();
+		const SharedStringVectorAllocator::StringVector &StrConst() const;
 
 		SharedStringVectorAllocator::SharedStringVector *_str;
 	};
@@ -216,9 +217,15 @@ namespace ff
 	};
 
 	template<>
-	inline hash_t HashFunc<String>(const String &val)
+	inline hash_t HashFunc<String>(StringRef val)
 	{
 		return HashBytes(val.c_str(), val.size() * sizeof(wchar_t));
+	}
+
+	template<>
+	inline hash_t HashFunc<StaticString>(const StaticString &val)
+	{
+		return HashFunc(val.GetString());
 	}
 }
 

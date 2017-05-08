@@ -10,21 +10,15 @@
 #include <cstdint>
 #include <functional>
 #include <iostream>
+#include <list>
 #include <memory>
 #include <new>
+#include <queue>
+#include <stack>
 #include <typeinfo>
 #include <utility>
-
-namespace ff
-{
-	template<class T>
-	struct IsPlainOldData
-	{
-		static const bool value = std::is_pod<T>::value;
-		static bool Value() { return value; }
-	};
-}
+#include <vector>
 
 #define MAKE_POD(name) \
-	template<> struct ff::IsPlainOldData<name> \
+	template<> struct std::is_pod<name> \
 	{ static const bool value = true; }

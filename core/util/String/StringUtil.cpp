@@ -41,7 +41,7 @@ BSTR ff::LoadBSTR(HINSTANCE hInstance, UINT nID)
 }
 #endif
 
-ff::String &ff::ReplaceAll(String &szText, StringRef szFind, StringRef szReplace)
+ff::StringOut ff::ReplaceAll(StringOut szText, StringRef szFind, StringRef szReplace)
 {
 	size_t pos = szText.find(szFind);
 	size_t len = szFind.size();
@@ -64,7 +64,7 @@ ff::String &ff::ReplaceAll(String &szText, StringRef szFind, StringRef szReplace
 	return szText;
 }
 
-ff::String &ff::ReplaceAll(String &szText, wchar_t chFind, wchar_t chReplace)
+ff::StringOut ff::ReplaceAll(StringOut szText, wchar_t chFind, wchar_t chReplace)
 {
 	for (auto ch = szText.begin(); ch != szText.end(); ch++)
 	{
@@ -77,7 +77,7 @@ ff::String &ff::ReplaceAll(String &szText, wchar_t chFind, wchar_t chReplace)
 	return szText;
 }
 
-ff::String &ff::StripSpaces(String &szText, bool bStart, bool bEnd)
+ff::StringOut ff::StripSpaces(StringOut szText, bool bStart, bool bEnd)
 {
 	const wchar_t *szSpaces = L" \t\r\n";
 	size_t nFirstNonSpace = szText.find_first_not_of(szSpaces);
@@ -150,7 +150,7 @@ ff::String ff::CanonicalizeString(StringRef text)
 	return ret;
 }
 
-void ff::CanonicalizeStringInPlace(String &text)
+void ff::CanonicalizeStringInPlace(StringOut text)
 {
 	for (auto ch = text.begin(); ch != text.end(); ch++)
 	{
@@ -161,7 +161,7 @@ void ff::CanonicalizeStringInPlace(String &text)
 	}
 }
 
-void ff::LowerCaseInPlace(String &text)
+void ff::LowerCaseInPlace(StringOut text)
 {
 	for (auto ch = text.begin(); ch != text.end(); ch++)
 	{
@@ -169,7 +169,7 @@ void ff::LowerCaseInPlace(String &text)
 	}
 }
 
-void ff::UpperCaseInPlace(String &text)
+void ff::UpperCaseInPlace(StringOut text)
 {
 	for (auto ch = text.begin(); ch != text.end(); ch++)
 	{
@@ -447,7 +447,7 @@ FARPROC ff::GetProcAddress(HINSTANCE hInstance, StringRef proc)
 	return ::GetProcAddress(hInstance, szProcA);
 }
 
-ff::String &ff::StripPathTail(String &szPath)
+ff::StringOut ff::StripPathTail(StringOut szPath)
 {
 	bool bFoundSlash = false;
 
@@ -470,7 +470,7 @@ ff::String &ff::StripPathTail(String &szPath)
 	return szPath;
 }
 
-ff::String &ff::AppendPathTail(String &szPath, StringRef tail)
+ff::StringOut ff::AppendPathTail(StringOut szPath, StringRef tail)
 {
 	if (tail.size())
 	{
@@ -535,7 +535,7 @@ ff::String ff::GetPathExtension(StringRef path)
 	return String();
 }
 
-ff::String &ff::ChangePathExtension(String &szPath, StringRef newExtension)
+ff::StringOut ff::ChangePathExtension(StringOut szPath, StringRef newExtension)
 {
 	String szAppend;
 

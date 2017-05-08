@@ -14,13 +14,6 @@
 Maze::App::App()
 {
 	InitializeComponent();
-
-#ifndef _DEBUG
-	// TODO: To enable ApplicationInsights, your key needs to be added here
-	//
-	//_telemetryClient = std::make_unique<ApplicationInsights::core::TelemetryClient>(
-	//	std::wstring(L"<app insights key>"));
-#endif
 }
 
 Maze::App::~App()
@@ -56,11 +49,6 @@ Windows::UI::Xaml::Controls::SwapChainPanel ^Maze::App::Panel::get()
 		: nullptr;
 }
 
-ApplicationInsights::core::TelemetryClient *Maze::App::TelemetryClient::get()
-{
-	return App::Current->_telemetryClient.get();
-}
-
 void Maze::App::OnLaunched(Windows::ApplicationModel::Activation::LaunchActivatedEventArgs ^args)
 {
 	InitializeProcess();
@@ -89,13 +77,6 @@ void Maze::App::InitializeProcess()
 	noAssertRet(!_processGlobals);
 	_processGlobals = std::make_unique<ff::ProcessGlobals>();
 	_processGlobals->Startup();
-
-	if (_telemetryClient)
-	{
-		_telemetryClient->TrackSessionStart();
-		_telemetryClient->TrackEvent(L"Launched Maze Game");
-		_telemetryClient->Flush();
-	}
 }
 
 void Maze::App::InitializeGlobals()

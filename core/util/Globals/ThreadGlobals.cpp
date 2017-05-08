@@ -87,7 +87,7 @@ void ff::ThreadGlobals::AtShutdown(std::function<void()> func)
 	assert(!IsShuttingDown());
 
 	LockMutex lock(_cs);
-	_shutdownFunctions.Insert(std::move(func));
+	_shutdownFunctions.emplace_back(std::move(func));
 }
 
 void ff::ThreadGlobals::CallShutdownFunctions()
@@ -97,12 +97,12 @@ void ff::ThreadGlobals::CallShutdownFunctions()
 	Vector<std::function<void()>> shutdownFunctions;
 	{
 		LockMutex lock(_cs);
-		shutdownFunctions.Reserve(_shutdownFunctions.Size());
+		shutdownFunctions.Reserve(_shutdownFunctions.size());
 
-		while (!_shutdownFunctions.IsEmpty())
+		while (!_shutdownFunctions.empty())
 		{
-			shutdownFunctions.Push(std::move(*_shutdownFunctions.GetLast()));
-			_shutdownFunctions.DeleteLast();
+			shutdownFunctions.Push(std::move(_shutdownFunctions.back()));
+			_shutdownFunctions.erase(--_shutdownFunctions.end());
 		}
 	}
 
