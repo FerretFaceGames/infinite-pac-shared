@@ -1,5 +1,4 @@
 #include "pch.h"
-#include "App/Timer.h"
 #include "App.xaml.h"
 #include "Audio/AudioDevice.h"
 #include "COM/ComObject.h"
@@ -22,6 +21,7 @@
 #include "States/HighScoreScreen.h"
 #include "States/PacApplication.h"
 #include "States/TitleScreen.h"
+#include "Types/Timer.h"
 
 // static
 PacApplication *s_pacApp = nullptr;

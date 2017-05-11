@@ -1,6 +1,4 @@
 #include "pch.h"
-#include "App/Log.h"
-#include "App/Timer.h"
 #include "COM/ComObject.h"
 #include "Core/Actors.h"
 #include "Core/Audio.h"
@@ -11,11 +9,13 @@
 #include "Core/RenderMaze.h"
 #include "Core/RenderText.h"
 #include "Core/Tiles.h"
+#include "Globals/Log.h"
 #include "Globals/MetroGlobals.h"
 #include "Graph/2D/2dRenderer.h"
 #include "Graph/Anim/AnimPos.h"
 #include "Graph/Anim/AnimKeys.h"
 #include "Input/KeyboardDevice.h"
+#include "Types/Timer.h"
 
 static const int DOT_BUBBLE_COUNT = 2;
 static const int FRUIT_BUBBLE_COUNT = 20;
