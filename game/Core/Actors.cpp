@@ -537,7 +537,7 @@ static ff::PoolAllocator<SpriteAnimPoolItem> s_spriteAnimPool;
 void *SpriteAnimActor::operator new(std::size_t size)
 {
 	assert(size <= sizeof(SpriteAnimPoolItem));
-	return s_spriteAnimPool.NewVoid();
+	return s_spriteAnimPool.New();
 }
 
 void SpriteAnimActor::operator delete(void *mem)
